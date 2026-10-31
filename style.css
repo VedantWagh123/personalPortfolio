@@ -6013,3 +6013,484 @@ footer,
 .hero-btn-secondary:hover, .about-btn-secondary:hover {
   transform: translateY(-3px) !important;
 }
+
+
+
+/* ============================================================ */
+/* EXACT SERVICES SECTION RECREATION (MOCKUP ACCURATE)         */
+/* ============================================================ */
+
+.services-section-exact {
+  position: relative !important;
+  background: #f8fafc !important;
+  padding: 95px 24px 105px !important;
+  overflow: hidden !important;
+}
+
+.services-container-exact {
+  max-width: 1420px !important;
+  margin: 0 auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 48px !important;
+}
+
+/* 1. Header */
+.services-header-exact {
+  text-align: center !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+}
+
+.services-pill-badge {
+  display: inline-block !important;
+  padding: 6px 18px !important;
+  background: #eff6ff !important;
+  color: #2563eb !important;
+  border: 1px solid #bfdbfe !important;
+  border-radius: 999px !important;
+  font-family: 'Outfit', sans-serif !important;
+  font-size: 0.78rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 1.6px !important;
+  text-transform: uppercase !important;
+  margin-bottom: 14px !important;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.08) !important;
+}
+
+.services-main-title {
+  font-family: 'Outfit', sans-serif !important;
+  font-size: 2.6rem !important;
+  font-weight: 800 !important;
+  color: #0f172a !important;
+  letter-spacing: -0.5px !important;
+  margin: 0 0 10px 0 !important;
+}
+
+.services-main-title .dash-separator {
+  color: #64748b !important;
+  font-weight: 400 !important;
+  margin: 0 4px !important;
+}
+
+.services-main-title .title-highlight-gradient {
+  background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+.services-title-underline {
+  width: 48px !important;
+  height: 3.5px !important;
+  background: #2563eb !important;
+  border-radius: 99px !important;
+  margin: 0 auto 16px !important;
+}
+
+.services-lead-desc {
+  max-width: 680px !important;
+  color: #64748b !important;
+  font-size: 1.02rem !important;
+  line-height: 1.65 !important;
+  margin: 0 auto !important;
+}
+
+/* 2. Main 2-Column Grid Layout */
+.services-grid-layout-exact {
+  display: grid !important;
+  grid-template-columns: 350px 1fr !important;
+  gap: 32px !important;
+  align-items: start !important;
+}
+
+/* 3. Left Column: Profile Card + Highlights Strip + CTA Banner */
+.services-left-col {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 18px !important;
+}
+
+.services-profile-card {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 20px !important;
+  overflow: hidden !important;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04) !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  padding: 8px !important;
+}
+
+.services-profile-img-wrap {
+  width: 100% !important;
+  border-radius: 14px !important;
+  overflow: hidden !important;
+  background: #f8fafc !important;
+}
+
+.services-dev-img {
+  width: 100% !important;
+  height: auto !important;
+  display: block !important;
+  object-fit: cover !important;
+  border-radius: 14px !important;
+  transition: transform 0.4s ease !important;
+}
+
+.services-profile-card:hover .services-dev-img {
+  transform: scale(1.02) !important;
+}
+
+/* Highlights Metric Strip */
+.services-metrics-strip {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 16px !important;
+  padding: 16px 10px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  box-shadow: 0 8px 25px rgba(15, 23, 42, 0.03) !important;
+}
+
+.metric-strip-item {
+  text-align: center !important;
+  flex: 1 !important;
+}
+
+.metric-strip-num {
+  font-family: 'Outfit', sans-serif !important;
+  font-size: 1.12rem !important;
+  font-weight: 800 !important;
+  color: #1e3a8a !important;
+  line-height: 1.2 !important;
+}
+
+.metric-strip-lbl {
+  font-size: 0.70rem !important;
+  color: #64748b !important;
+  font-weight: 500 !important;
+  margin-top: 3px !important;
+}
+
+.metric-strip-divider {
+  width: 1px !important;
+  height: 26px !important;
+  background: #e2e8f0 !important;
+}
+
+/* Project CTA Banner */
+.services-cta-banner {
+  background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 55%, #3b82f6 100%) !important;
+  border-radius: 20px !important;
+  padding: 26px 22px !important;
+  color: #ffffff !important;
+  position: relative !important;
+  overflow: hidden !important;
+  box-shadow: 0 16px 36px rgba(37, 99, 235, 0.28) !important;
+}
+
+.cta-banner-content {
+  position: relative !important;
+  z-index: 2 !important;
+  max-width: 72% !important;
+}
+
+.cta-banner-title {
+  font-family: 'Outfit', sans-serif !important;
+  font-size: 1.25rem !important;
+  font-weight: 700 !important;
+  color: #ffffff !important;
+  margin: 0 0 8px 0 !important;
+  letter-spacing: -0.2px !important;
+}
+
+.cta-banner-sub {
+  font-size: 0.85rem !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+  line-height: 1.5 !important;
+  margin: 0 0 18px 0 !important;
+}
+
+.cta-banner-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  background: #ffffff !important;
+  color: #1d4ed8 !important;
+  padding: 9px 20px !important;
+  border-radius: 999px !important;
+  font-size: 0.88rem !important;
+  font-weight: 700 !important;
+  text-decoration: none !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12) !important;
+  transition: all 0.25s ease !important;
+}
+
+.cta-banner-btn:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.2) !important;
+  background: #f8fafc !important;
+}
+
+.cta-banner-doodle {
+  position: absolute !important;
+  right: 14px !important;
+  bottom: 16px !important;
+  font-family: 'Caveat', cursive, sans-serif !important;
+  font-size: 1.15rem !important;
+  color: rgba(255, 255, 255, 0.95) !important;
+  font-weight: 600 !important;
+  line-height: 1.2 !important;
+  text-align: right !important;
+  pointer-events: none !important;
+  transform: rotate(-3deg) !important;
+}
+
+/* 4. Right Column: 3x2 Service Cards Grid */
+.services-cards-grid-exact {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 22px !important;
+}
+
+.service-card-item {
+  background: #ffffff !important;
+  border: 1px solid #eef2f6 !important;
+  border-radius: 18px !important;
+  padding: 24px 22px 20px !important;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.035) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  position: relative !important;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.35s ease,
+              border-color 0.35s ease !important;
+}
+
+.service-card-item:hover {
+  transform: translateY(-6px) !important;
+  box-shadow: 0 20px 45px rgba(37, 99, 235, 0.1) !important;
+  border-color: rgba(37, 99, 235, 0.35) !important;
+}
+
+.service-card-top {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  margin-bottom: 16px !important;
+}
+
+.service-icon-box {
+  width: 44px !important;
+  height: 44px !important;
+  border-radius: 12px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 1.15rem !important;
+  transition: transform 0.3s ease !important;
+}
+
+.service-card-item:hover .service-icon-box {
+  transform: scale(1.08) !important;
+}
+
+.service-icon-box.icon-blue { background: #eff6ff !important; color: #2563eb !important; }
+.service-icon-box.icon-green { background: #f0fdf4 !important; color: #16a34a !important; }
+.service-icon-box.icon-purple { background: #faf5ff !important; color: #9333ea !important; }
+.service-icon-box.icon-orange { background: #fffbeb !important; color: #d97706 !important; }
+.service-icon-box.icon-red { background: #fff1f2 !important; color: #e11d48 !important; }
+.service-icon-box.icon-violet { background: #f5f3ff !important; color: #7c3aed !important; }
+
+.service-card-num {
+  font-family: 'Outfit', sans-serif !important;
+  font-size: 0.88rem !important;
+  font-weight: 700 !important;
+  color: #cbd5e1 !important;
+}
+
+/* 5. COLOR CHANGING RGB GRADIENT HEADINGS (Randomized per card) */
+.service-title-rgb {
+  font-family: 'Outfit', sans-serif !important;
+  font-size: 1.12rem !important;
+  font-weight: 700 !important;
+  line-height: 1.35 !important;
+  margin: 0 0 8px 0 !important;
+  letter-spacing: -0.2px !important;
+  display: inline-block !important;
+  background: linear-gradient(135deg, #0f172a 0%, #2563eb 25%, #7c3aed 50%, #06b6d4 75%, #0f172a 100%) !important;
+  background-size: 300% 300% !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+  transition: filter 0.3s ease !important;
+}
+
+/* Staggered non-synchronized random color shifts so they never shift at the same time */
+.service-card-item:nth-child(1) .service-title-rgb {
+  animation: serviceRgbGlow1 8.5s ease-in-out infinite !important;
+  animation-delay: 0.2s !important;
+}
+.service-card-item:nth-child(2) .service-title-rgb {
+  animation: serviceRgbGlow2 11.2s ease-in-out infinite !important;
+  animation-delay: 3.4s !important;
+}
+.service-card-item:nth-child(3) .service-title-rgb {
+  animation: serviceRgbGlow3 7.8s ease-in-out infinite !important;
+  animation-delay: 5.7s !important;
+}
+.service-card-item:nth-child(4) .service-title-rgb {
+  animation: serviceRgbGlow1 9.6s ease-in-out infinite !important;
+  animation-delay: 1.8s !important;
+}
+.service-card-item:nth-child(5) .service-title-rgb {
+  animation: serviceRgbGlow2 12.0s ease-in-out infinite !important;
+  animation-delay: 4.2s !important;
+}
+.service-card-item:nth-child(6) .service-title-rgb {
+  animation: serviceRgbGlow3 8.9s ease-in-out infinite !important;
+  animation-delay: 2.5s !important;
+}
+
+@keyframes serviceRgbGlow1 {
+  0% { background-position: 0% 50%; }
+  35% { background-position: 60% 80%; }
+  70% { background-position: 100% 20%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes serviceRgbGlow2 {
+  0% { background-position: 100% 30%; }
+  45% { background-position: 20% 70%; }
+  80% { background-position: 70% 10%; }
+  100% { background-position: 100% 30%; }
+}
+
+@keyframes serviceRgbGlow3 {
+  0% { background-position: 50% 100%; }
+  40% { background-position: 10% 20%; }
+  75% { background-position: 90% 60%; }
+  100% { background-position: 50% 100%; }
+}
+
+.service-card-item:hover .service-title-rgb {
+  filter: drop-shadow(0 2px 10px rgba(37, 99, 235, 0.35)) !important;
+}
+
+/* Card Description */
+.service-card-desc {
+  font-size: 0.84rem !important;
+  color: #64748b !important;
+  line-height: 1.5 !important;
+  margin: 0 0 16px 0 !important;
+  min-height: 38px !important;
+}
+
+/* Checklist */
+.service-checklist {
+  list-style: none !important;
+  padding: 0 !important;
+  margin: 0 0 16px 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+}
+
+.service-checklist li {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  font-size: 0.83rem !important;
+  color: #334155 !important;
+  font-weight: 500 !important;
+  line-height: 1.4 !important;
+}
+
+.service-checklist li i {
+  color: #2563eb !important;
+  font-size: 0.84rem !important;
+  flex-shrink: 0 !important;
+}
+
+/* Card Arrow Button */
+.service-card-footer {
+  display: flex !important;
+  justify-content: flex-end !important;
+  margin-top: auto !important;
+  padding-top: 4px !important;
+}
+
+.service-arrow-link {
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 50% !important;
+  background: #eff6ff !important;
+  color: #2563eb !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 0.82rem !important;
+  text-decoration: none !important;
+  transition: all 0.25s ease !important;
+}
+
+.service-card-item:hover .service-arrow-link {
+  background: #2563eb !important;
+  color: #ffffff !important;
+  transform: translateX(3px) !important;
+}
+
+/* 6. Responsive Breakdown */
+@media (max-width: 1200px) {
+  .services-cards-grid-exact {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 991px) {
+  .services-grid-layout-exact {
+    grid-template-columns: 1fr !important;
+  }
+  .services-left-col {
+    max-width: 460px !important;
+    margin: 0 auto !important;
+    width: 100% !important;
+  }
+  .services-cards-grid-exact {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .services-cards-grid-exact {
+    grid-template-columns: 1fr !important;
+  }
+  .services-main-title {
+    font-size: 2.1rem !important;
+  }
+  .services-metrics-strip {
+    flex-wrap: wrap !important;
+    gap: 12px !important;
+  }
+  .metric-strip-item {
+    min-width: 45% !important;
+  }
+  .metric-strip-divider {
+    display: none !important;
+  }
+}
+
+
+
+/* Guarantee Visibility for Services Section (never stuck hidden by AOS) */
+.services-section-exact,
+.services-header-exact,
+.services-left-col,
+.service-card-item {
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: none !important;
+}

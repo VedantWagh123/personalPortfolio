@@ -680,127 +680,222 @@
   <!-- ============================================================ -->
   <!-- 3. SERVICES SECTION -->
   <!-- ============================================================ -->
-  <section class="services-section" id="services">
-    <div class="services-container">
+    <!-- ============================================================ -->
+  <!-- 3. SERVICES SECTION (EXACT MOCKUP RECREATION) -->
+  <!-- ============================================================ -->
+  <section class="services-section-exact" id="services">
+    <div class="services-container-exact">
+
       <!-- Section Header -->
-      <div class="services-header" data-aos="fade-up">
-        <h2 class="services-title">
-          <span class="title-bg">Services</span>
-          <span class="title-text">What I Offer</span>
+      <div class="services-header-exact" data-aos="fade-up">
+        <div class="services-pill-badge">WHAT I OFFER</div>
+        <h2 class="services-main-title">
+          Software Developer <span class="dash-separator">–</span> <span class="title-highlight-gradient">Services</span>
         </h2>
-        <p class="services-subtitle" data-aos="fade-up" data-aos-delay="100">
-          Crafting digital experiences with cutting-edge technology and creative excellence
+        <div class="services-title-underline"></div>
+        <p class="services-lead-desc">
+          I help businesses and individuals turn their ideas into real, scalable digital products with modern technology and clean design.
         </p>
-        
-        <!-- Coming Soon Countdown Banner -->
-        <div class="coming-soon-banner" data-aos="zoom-in" data-aos-delay="200" id="comingSoonBanner">
-          <div class="banner-content">
-            <i class="fas fa-clock"></i>
-            <span class="banner-text">Services starting June 2026</span>
-            <div class="countdown-timer" id="serviceCountdown">
-              <div class="time-block">
-                <span class="time-value" id="days">00</span>
-                <span class="time-label">Days</span>
-              </div>
-              <div class="time-block">
-                <span class="time-value" id="hours">00</span>
-                <span class="time-label">Hours</span>
-              </div>
-              <div class="time-block">
-                <span class="time-value" id="minutes">00</span>
-                <span class="time-label">Minutes</span>
-              </div>
-              <div class="time-block">
-                <span class="time-value" id="seconds">00</span>
-                <span class="time-label">Seconds</span>
-              </div>
+      </div>
+
+      <!-- Main Layout: Left Presentation Block + Right 3x2 Service Cards Grid -->
+      <div class="services-grid-layout-exact">
+
+        <!-- LEFT COLUMN: Profile Visual, Metrics & Project CTA Card -->
+        <div class="services-left-col" data-aos="fade-right">
+          <!-- Person Card with Graphic -->
+          <div class="services-profile-card">
+            <div class="services-profile-img-wrap">
+              <img src="images/services-developer.png" alt="Developer at work" class="services-dev-img" />
             </div>
-            <div class="banner-cta">
-              <p class="banner-subtitle">Get notified when we launch!</p>
-              <button class="notify-btn" id="notifyBtn" onclick="openNotifyForm()">
-                <i class="fas fa-bell"></i>
-                <span>Notify Me</span>
-              </button>
+          </div>
+
+          <!-- Highlights Metric Row (4 columns) -->
+          <div class="services-metrics-strip">
+            <div class="metric-strip-item">
+              <div class="metric-strip-num">6+</div>
+              <div class="metric-strip-lbl">Service Areas</div>
+            </div>
+            <div class="metric-strip-divider"></div>
+            <div class="metric-strip-item">
+              <div class="metric-strip-num">100%</div>
+              <div class="metric-strip-lbl">Client Focus</div>
+            </div>
+            <div class="metric-strip-divider"></div>
+            <div class="metric-strip-item">
+              <div class="metric-strip-num">Modern</div>
+              <div class="metric-strip-lbl">Tech Stack</div>
+            </div>
+            <div class="metric-strip-divider"></div>
+            <div class="metric-strip-item">
+              <div class="metric-strip-num">Scalable</div>
+              <div class="metric-strip-lbl">Solutions</div>
+            </div>
+          </div>
+
+          <!-- Vibrant Gradient CTA Card: Have a Project in Mind? -->
+          <div class="services-cta-banner">
+            <div class="cta-banner-content">
+              <h3 class="cta-banner-title">Have a Project in Mind?</h3>
+              <p class="cta-banner-sub">Let's discuss your idea and create something amazing together.</p>
+              <a href="#contact" class="cta-banner-btn">
+                <span>Get In Touch</span>
+                <i class="fas fa-arrow-right"></i>
+              </a>
+            </div>
+            <div class="cta-banner-doodle">
+              <span>Let's<br>Build Together!</span>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Services CTA -->
-      <div class="services-cta" data-aos="fade-up" data-aos-delay="300">
-        <div class="cta-content">
-          <h3 class="cta-title">Ready to collaborate?</h3>
-          <p class="cta-description">
-            Get in touch to discuss your project and how I can help bring your vision to life starting June 2026.
-          </p>
-          <button class="cta-button" id="servicesCTA" onclick="openNotifyForm()">
-            <span class="button-text">Get Notified</span>
-            <i class="fas fa-arrow-right"></i>
-          </button>
-        </div>
-        <div class="cta-visual">
-          <div class="collab-orbit-container">
-            <div class="collab-orbit-ring"></div>
-            <div class="collab-orbit-ring inner"></div>
-            <div class="collab-orbit-center" title="Collaborate">
-              <i class="fas fa-handshake"></i>
+        <!-- RIGHT COLUMN: 6 Service Cards Grid (3 cols x 2 rows) -->
+        <div class="services-cards-grid-exact">
+
+          <!-- 01: Web Development -->
+          <div class="service-card-item" data-aos="fade-up" data-aos-delay="100">
+            <div class="service-card-top">
+              <div class="service-icon-box icon-blue">
+                <i class="fas fa-globe"></i>
+              </div>
+              <span class="service-card-num">01</span>
             </div>
-            <div class="collab-orbit-item collab-orbit-1" title="Code">
-              <i class="fas fa-code"></i>
-            </div>
-            <div class="collab-orbit-item collab-orbit-2" title="UI/UX Design">
-              <i class="fas fa-paint-brush"></i>
-            </div>
-            <div class="collab-orbit-item collab-orbit-3" title="Mobile App">
-              <i class="fas fa-mobile-alt"></i>
-            </div>
-            <div class="collab-orbit-item collab-orbit-4" title="Media & Video">
-              <i class="fas fa-video"></i>
+            <h3 class="service-title-rgb">Web Development</h3>
+            <p class="service-card-desc">Modern, responsive and high-performance websites and web applications.</p>
+            <ul class="service-checklist">
+              <li><i class="fas fa-check-circle"></i><span>Business websites</span></li>
+              <li><i class="fas fa-check-circle"></i><span>Portfolio websites</span></li>
+              <li><i class="fas fa-check-circle"></i><span>E-commerce platforms</span></li>
+              <li><i class="fas fa-check-circle"></i><span>Custom web applications</span></li>
+              <li><i class="fas fa-check-circle"></i><span>Admin dashboards</span></li>
+            </ul>
+            <div class="service-card-footer">
+              <a href="#contact" class="service-arrow-link" aria-label="Learn more about Web Development">
+                <i class="fas fa-arrow-right"></i>
+              </a>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
 
-    <!-- Background Elements -->
-    <div class="services-bg-elements">
-      <div class="bg-shape bg-shape-1"></div>
-      <div class="bg-shape bg-shape-2"></div>
-      <div class="bg-shape bg-shape-3"></div>
-      <div class="floating-icons">
-        <i class="fas fa-code floating-icon"></i>
-        <i class="fas fa-palette floating-icon"></i>
-        <i class="fas fa-server floating-icon"></i>
-        <i class="fas fa-video floating-icon"></i>
-        <i class="fas fa-mobile-alt floating-icon"></i>
-      </div>
-    </div>
-
-    <!-- Notify Form Modal -->
-    <div class="notify-modal-overlay" id="notifyModalOverlay">
-      <div class="notify-modal" id="notifyModal">
-        <div class="notify-modal-header">
-          <h3>Get Notified!</h3>
-          <button class="notify-modal-close" onclick="closeNotifyForm()">
-            <i class="fas fa-times"></i>
-          </button>
-        </div>
-        <div class="notify-modal-content">
-          <p>Enter your email and we'll remind you when our services launch!</p>
-          <form class="notify-form" id="notifyForm" onsubmit="handleNotifySubmit(event)">
-            <div class="notify-form-group">
-              <input type="email" id="notifyEmail" placeholder="Enter your email" required>
+          <!-- 02: Mobile App Development -->
+          <div class="service-card-item" data-aos="fade-up" data-aos-delay="150">
+            <div class="service-card-top">
+              <div class="service-icon-box icon-green">
+                <i class="fas fa-mobile-screen-button"></i>
+              </div>
+              <span class="service-card-num">02</span>
             </div>
-            <button type="submit" class="notify-submit-btn">
-              <span>Remind Me</span>
-              <i class="fas fa-arrow-right"></i>
-            </button>
-          </form>
-          <div class="notify-success" id="notifySuccess">
-            <i class="fas fa-check-circle"></i>
-            <p>Thank you for your interest!</p>
-            <p style="font-size: 1rem; margin-top: 10px; opacity: 0.9;">We will remind you in a few days when our services launch.</p>
+            <h3 class="service-title-rgb">Mobile App Development</h3>
+            <p class="service-card-desc">Native and cross-platform mobile applications for Android and iOS.</p>
+            <ul class="service-checklist">
+              <li><i class="fas fa-check-circle"></i><span>Android applications</span></li>
+              <li><i class="fas fa-check-circle"></i><span>iOS applications</span></li>
+              <li><i class="fas fa-check-circle"></i><span>Cross-platform apps (React Native)</span></li>
+              <li><i class="fas fa-check-circle"></i><span>Business management apps</span></li>
+              <li><i class="fas fa-check-circle"></i><span>API integration</span></li>
+            </ul>
+            <div class="service-card-footer">
+              <a href="#contact" class="service-arrow-link" aria-label="Learn more about Mobile App Development">
+                <i class="fas fa-arrow-right"></i>
+              </a>
+            </div>
           </div>
+
+          <!-- 03: AI & Machine Learning Solutions -->
+          <div class="service-card-item" data-aos="fade-up" data-aos-delay="200">
+            <div class="service-card-top">
+              <div class="service-icon-box icon-purple">
+                <i class="fas fa-brain"></i>
+              </div>
+              <span class="service-card-num">03</span>
+            </div>
+            <h3 class="service-title-rgb">AI &amp; Machine Learning Solutions</h3>
+            <p class="service-card-desc">Smart solutions to automate, analyze and improve your business.</p>
+            <ul class="service-checklist">
+              <li><i class="fas fa-check-circle"></i><span>AI chatbots</span></li>
+              <li><i class="fas fa-check-circle"></i><span>Resume screening systems</span></li>
+              <li><i class="fas fa-check-circle"></i><span>Recommendation systems</span></li>
+              <li><i class="fas fa-check-circle"></i><span>AI-powered automation</span></li>
+              <li><i class="fas fa-check-circle"></i><span>Smart search solutions</span></li>
+            </ul>
+            <div class="service-card-footer">
+              <a href="#contact" class="service-arrow-link" aria-label="Learn more about AI & ML">
+                <i class="fas fa-arrow-right"></i>
+              </a>
+            </div>
+          </div>
+
+          <!-- 04: Backend & API Development -->
+          <div class="service-card-item" data-aos="fade-up" data-aos-delay="250">
+            <div class="service-card-top">
+              <div class="service-icon-box icon-orange">
+                <i class="fas fa-database"></i>
+              </div>
+              <span class="service-card-num">04</span>
+            </div>
+            <h3 class="service-title-rgb">Backend &amp; API Development</h3>
+            <p class="service-card-desc">Robust and secure backend systems with scalable architecture.</p>
+            <ul class="service-checklist">
+              <li><i class="fas fa-check-circle"></i><span>REST API development</span></li>
+              <li><i class="fas fa-check-circle"></i><span>Database architecture</span></li>
+              <li><i class="fas fa-check-circle"></i><span>Authentication systems</span></li>
+              <li><i class="fas fa-check-circle"></i><span>Payment gateway integration</span></li>
+              <li><i class="fas fa-check-circle"></i><span>Real-time applications</span></li>
+            </ul>
+            <div class="service-card-footer">
+              <a href="#contact" class="service-arrow-link" aria-label="Learn more about Backend">
+                <i class="fas fa-arrow-right"></i>
+              </a>
+            </div>
+          </div>
+
+          <!-- 05: Cloud & Deployment Solutions -->
+          <div class="service-card-item" data-aos="fade-up" data-aos-delay="300">
+            <div class="service-card-top">
+              <div class="service-icon-box icon-red">
+                <i class="fas fa-cloud"></i>
+              </div>
+              <span class="service-card-num">05</span>
+            </div>
+            <h3 class="service-title-rgb">Cloud &amp; Deployment Solutions</h3>
+            <p class="service-card-desc">Reliable deployment and cloud solutions for better performance and scalability.</p>
+            <ul class="service-checklist">
+              <li><i class="fas fa-check-circle"></i><span>Website hosting</span></li>
+              <li><i class="fas fa-check-circle"></i><span>Cloud integration (AWS, etc.)</span></li>
+              <li><i class="fas fa-check-circle"></i><span>Server deployment</span></li>
+              <li><i class="fas fa-check-circle"></i><span>CI/CD pipelines</span></li>
+              <li><i class="fas fa-check-circle"></i><span>Performance optimization</span></li>
+            </ul>
+            <div class="service-card-footer">
+              <a href="#contact" class="service-arrow-link" aria-label="Learn more about Cloud">
+                <i class="fas fa-arrow-right"></i>
+              </a>
+            </div>
+          </div>
+
+          <!-- 06: UI/UX & Software Solutions -->
+          <div class="service-card-item" data-aos="fade-up" data-aos-delay="350">
+            <div class="service-card-top">
+              <div class="service-icon-box icon-violet">
+                <i class="fas fa-pen-nib"></i>
+              </div>
+              <span class="service-card-num">06</span>
+            </div>
+            <h3 class="service-title-rgb">UI/UX &amp; Software Solutions</h3>
+            <p class="service-card-desc">Clean, modern and user-friendly designs for better user experience.</p>
+            <ul class="service-checklist">
+              <li><i class="fas fa-check-circle"></i><span>Website redesign</span></li>
+              <li><i class="fas fa-check-circle"></i><span>Responsive UI development</span></li>
+              <li><i class="fas fa-check-circle"></i><span>Dashboard design</span></li>
+              <li><i class="fas fa-check-circle"></i><span>Custom software development</span></li>
+              <li><i class="fas fa-check-circle"></i><span>Existing software improvements</span></li>
+            </ul>
+            <div class="service-card-footer">
+              <a href="#contact" class="service-arrow-link" aria-label="Learn more about UI/UX">
+                <i class="fas fa-arrow-right"></i>
+              </a>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>

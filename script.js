@@ -1151,3 +1151,28 @@ document.addEventListener("DOMContentLoaded", () => {
   // Fallback trigger if page already loaded
   setTimeout(start, 3500);
 })();
+
+
+// ============================================================
+// 17. DYNAMIC RANDOM RGB COLOR SHIMMER ON SERVICE HEADINGS
+// ============================================================
+(function initRandomServiceHeadingShimmer() {
+  const titles = document.querySelectorAll(".service-title-rgb");
+  if (titles.length === 0) return;
+
+  function pulseRandomTitle() {
+    const randomIndex = Math.floor(Math.random() * titles.length);
+    const targetTitle = titles[randomIndex];
+    if (targetTitle) {
+      targetTitle.style.filter = "drop-shadow(0 2px 14px rgba(37, 99, 235, 0.5))";
+      setTimeout(() => {
+        targetTitle.style.filter = "none";
+      }, 1900);
+    }
+
+    const nextInterval = 2400 + Math.random() * 2600;
+    setTimeout(pulseRandomTitle, nextInterval);
+  }
+
+  setTimeout(pulseRandomTitle, 3000);
+})();
