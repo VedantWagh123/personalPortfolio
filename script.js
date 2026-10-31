@@ -18,8 +18,6 @@ document.addEventListener("DOMContentLoaded", ensureHeroVisible);
 
 window.addEventListener("load", () => {
   ensureHeroVisible();
-  const welcomeSpans = document.querySelectorAll(".preloader-welcome span");
-  welcomeSpans.forEach(span => span.classList.add("active"));
   const preloader = document.getElementById("preloader");
   if (!preloader) return;
 

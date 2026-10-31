@@ -2907,7 +2907,7 @@ section, .about, .services-section, .projects-page-section, .testimonial-section
 /* ABOUT SECTION STYLES */
 /* ============================================================ */
 .about {
-  padding: 80px 24px 90px !important;
+  padding: 80px 60px 90px !important;
   background: 
     radial-gradient(circle at 12% 25%, rgba(219, 234, 254, 0.45) 0%, transparent 45%),
     radial-gradient(circle at 88% 30%, rgba(224, 231, 255, 0.4) 0%, transparent 50%),
@@ -4709,7 +4709,7 @@ section, .about, .services-section, .projects-page-section, .testimonial-section
 /* EXACT ABOUT ME SECTION RECREATION & POLISH                   */
 /* ============================================================ */
 .about {
-  padding: 80px 24px 90px !important;
+  padding: 80px 60px 90px !important;
   background: 
     radial-gradient(circle at 12% 25%, rgba(219, 234, 254, 0.45) 0%, transparent 45%),
     radial-gradient(circle at 88% 30%, rgba(224, 231, 255, 0.4) 0%, transparent 50%),
@@ -4721,7 +4721,7 @@ section, .about, .services-section, .projects-page-section, .testimonial-section
 }
 
 .about-container-exact {
-  max-width: 1240px !important;
+  max-width: 1420px !important;
   margin: 0 auto !important;
   display: flex !important;
   flex-direction: column !important;
@@ -4731,7 +4731,7 @@ section, .about, .services-section, .projects-page-section, .testimonial-section
 /* 3-Column Top Grid: Photo, Main Bio, Metrics Stack */
 .about-top-grid-exact {
   display: grid !important;
-  grid-template-columns: 350px 1fr 220px !important;
+  grid-template-columns: 360px 1fr 240px !important;
   gap: 36px !important;
   align-items: center !important;
 }
@@ -5126,9 +5126,9 @@ section, .about, .services-section, .projects-page-section, .testimonial-section
   border: 1px solid #f1f5f9 !important;
   border-radius: 20px !important;
   box-shadow: 0 10px 40px rgba(15, 23, 42, 0.04) !important;
-  padding: 28px 32px !important;
+  padding: 32px 40px !important;
   display: grid !important;
-  grid-template-columns: 210px 1fr !important;
+  grid-template-columns: 220px 1fr !important;
   gap: 36px !important;
   align-items: start !important;
 }
@@ -5169,7 +5169,7 @@ section, .about, .services-section, .projects-page-section, .testimonial-section
 }
 
 .about-tab-content-area {
-  min-height: 180px !important;
+  min-height: 240px !important;
 }
 
 .tab-panel-header {
@@ -5488,50 +5488,23 @@ section, .about, .services-section, .projects-page-section, .testimonial-section
   display: none !important;
 }
 
-/* Preloader Animated WELCOME Title (Format from animated-title) */
-.preloader-welcome {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 6px !important;
-  margin-top: 14px !important;
-  position: relative !important;
-}
 
-.preloader-welcome span {
-  display: inline-block !important;
-  font-family: 'Outfit', 'Poppins', sans-serif !important;
-  font-size: 2.2rem !important;
-  font-weight: 800 !important;
-  letter-spacing: 4px !important;
-  background: linear-gradient(135deg, #0f172a 0%, #1e40af 50%, #2563eb 100%) !important;
-  -webkit-background-clip: text !important;
-  -webkit-text-fill-color: transparent !important;
-  transform: translateY(35px) !important;
-  opacity: 0 !important;
-  transition: transform 0.65s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.5s ease !important;
-  animation: welcomeLetterUp 0.65s cubic-bezier(0.2, 0.8, 0.2, 1) forwards !important;
-}
 
-/* Staggered animation delays matching animated-title format */
-.preloader-welcome span:nth-child(1) { animation-delay: 0.10s !important; transition-delay: 0.10s !important; }
-.preloader-welcome span:nth-child(2) { animation-delay: 0.18s !important; transition-delay: 0.18s !important; }
-.preloader-welcome span:nth-child(3) { animation-delay: 0.26s !important; transition-delay: 0.26s !important; }
-.preloader-welcome span:nth-child(4) { animation-delay: 0.34s !important; transition-delay: 0.34s !important; }
-.preloader-welcome span:nth-child(5) { animation-delay: 0.42s !important; transition-delay: 0.42s !important; }
-.preloader-welcome span:nth-child(6) { animation-delay: 0.50s !important; transition-delay: 0.50s !important; }
-.preloader-welcome span:nth-child(7) { animation-delay: 0.58s !important; transition-delay: 0.58s !important; }
 
-.preloader-welcome span.active {
-  transform: translateY(0px) !important;
-  opacity: 1 !important;
-}
 
-@keyframes welcomeLetterUp {
-  0% {
-    transform: translateY(35px);
-    opacity: 0;
-  }
+
+
+
+
+
+
+
+
+
+
+
+
+
   60% {
     opacity: 1;
   }
