@@ -1,3 +1,22 @@
+
+/* ============================================================ */
+/* LENIS SMOOTH SCROLL INTEGRATION                             */
+/* ============================================================ */
+html.lenis, html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}
 /* Reset */
 * {
   margin: 0;
@@ -24,7 +43,7 @@
 }
 
 html {
-  scroll-behavior: auto !important;
+  scroll-behavior: smooth !important;
   scroll-padding-top: 75px;
   font-size: 15px;
 }
@@ -184,7 +203,7 @@ body {
 }
 
 html {
-  scroll-behavior: auto !important;
+  scroll-behavior: smooth !important;
   background-color: #ffffff !important;
 }
 
@@ -638,7 +657,7 @@ canvas#particle-canvas {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
+    scroll-behavior: smooth !important;
   }
 }
 
@@ -2866,7 +2885,7 @@ input, textarea, select {
 /* SMOOTH SCROLL & NAVIGATION ENHANCEMENTS */
 /* ============================================================ */
 html {
-  scroll-behavior: auto !important;
+  scroll-behavior: smooth !important;
 }
 
 section, .about, .services-section, .projects-page-section, .testimonial-section, .contact-section {
@@ -5805,12 +5824,12 @@ section, .about, .services-section, .projects-page-section, .testimonial-section
 /* ULTRA-SMOOTH HARDWARE ACCELERATED SCROLL OPTIMIZATIONS       */
 /* ============================================================ */
 html {
-  scroll-behavior: auto !important;
-  overscroll-behavior-y: none;
+  scroll-behavior: smooth !important;
+  over
 }
 
 body {
-  scroll-behavior: auto !important;
+  scroll-behavior: smooth !important;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -5834,12 +5853,12 @@ body {
 /* ULTRA-SMOOTH HARDWARE ACCELERATED SCROLL OPTIMIZATIONS       */
 /* ============================================================ */
 html {
-  scroll-behavior: auto !important;
-  overscroll-behavior-y: none;
+  scroll-behavior: smooth !important;
+  over
 }
 
 body {
-  scroll-behavior: auto !important;
+  scroll-behavior: smooth !important;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -5859,256 +5878,219 @@ body {
 }
 
 
+
+
+
 /* ============================================================ */
-/* PREMIUM PERFORMANCE & ANIMATION OPTIMIZATION                */
-/* Auto-cursor demo, scroll reveals, smooth interactions       */
+/* ULTRA-PREMIUM SMOOTH SCROLL, CUSTOM CURSOR & HERO AUTO DEMO  */
 /* ============================================================ */
 
-/* 1. GPU ACCELERATION FOR KEY ELEMENTS */
+/* 1. Global GPU Acceleration & Butter-Smooth Rendering */
 .hero-section,
 .about,
 .skills,
 .services,
 .projects,
 .contact,
-footer {
-  will-change: auto;
+footer,
+.hero-float-card,
+.about-metric-card,
+.master-project-card {
+  -webkit-transform: translateZ(0);
   transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
 }
 
-/* 2. SMOOTH SCROLLBAR CUSTOMIZATION */
+/* 2. Sleek Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px !important;
+  width: 7px !important;
 }
 ::-webkit-scrollbar-track {
-  background: #f1f5f9 !important;
+  background: #f8fafc !important;
 }
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #3b82f6, #2563eb) !important;
-  border-radius: 10px !important;
+  background: linear-gradient(180deg, #3b82f6 0%, #1d4ed8 100%) !important;
+  border-radius: 999px !important;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #1d4ed8 !important;
+  background: #1e40af !important;
 }
 
-/* 3. PREMIUM SECTION SCROLL REVEAL */
-.reveal-section {
-  opacity: 0;
-  transform: translateY(40px);
-  transition: opacity 0.75s cubic-bezier(0.22, 1, 0.36, 1), transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+/* 3. Real Interactive Custom Cursor (Instant 60fps tracking) */
+body.custom-cursor-active,
+body.custom-cursor-active a,
+body.custom-cursor-active button,
+body.custom-cursor-active input,
+body.custom-cursor-active textarea,
+body.custom-cursor-active [role="button"],
+body.custom-cursor-active .hero-float-card,
+body.custom-cursor-active * {
+  cursor: none !important;
 }
-.reveal-section.revealed {
-  opacity: 1;
-  transform: translateY(0);
-}
-.reveal-section.revealed .reveal-child {
-  opacity: 1;
-  transform: translateY(0);
-}
-.reveal-child {
-  opacity: 0;
-  transform: translateY(24px);
-  transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1), transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.reveal-child:nth-child(1) { transition-delay: 0.05s; }
-.reveal-child:nth-child(2) { transition-delay: 0.12s; }
-.reveal-child:nth-child(3) { transition-delay: 0.19s; }
-.reveal-child:nth-child(4) { transition-delay: 0.26s; }
-.reveal-child:nth-child(5) { transition-delay: 0.33s; }
-.reveal-child:nth-child(6) { transition-delay: 0.40s; }
 
-/* 4. PREMIUM CUSTOM CURSOR (real user cursor) */
 .custom-cursor-outer {
   position: fixed;
-  pointer-events: none;
-  z-index: 99998;
-  width: 32px;
-  height: 32px;
-  border: 2px solid rgba(59, 130, 246, 0.55);
+  top: 0;
+  left: 0;
+  width: 36px;
+  height: 36px;
+  border: 2px solid rgba(37, 99, 235, 0.7);
   border-radius: 50%;
-  top: -16px;
-  left: -16px;
-  transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s ease, border-color 0.25s ease, width 0.25s ease, height 0.25s ease;
-  will-change: transform;
+  pointer-events: none;
+  z-index: 9999999;
+  transform: translate(-50%, -50%);
+  transition: width 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+              height 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+              background 0.22s ease,
+              border-color 0.22s ease,
+              box-shadow 0.22s ease,
+              opacity 0.2s ease;
+  box-shadow: 0 0 14px rgba(37, 99, 235, 0.25);
+  opacity: 0;
+  will-change: left, top, width, height, transform;
 }
+
 .custom-cursor-inner {
   position: fixed;
-  pointer-events: none;
-  z-index: 99999;
-  width: 7px;
-  height: 7px;
-  background: #3b82f6;
-  border-radius: 50%;
-  top: -3.5px;
-  left: -3.5px;
-  transition: transform 0.08s ease, width 0.2s ease, height 0.2s ease, background 0.2s ease;
-  will-change: transform;
-}
-.custom-cursor-outer.cursor-hover {
-  width: 48px;
-  height: 48px;
-  top: -24px;
-  left: -24px;
-  border-color: rgba(59, 130, 246, 0.85);
-  background: rgba(59, 130, 246, 0.08);
-}
-.custom-cursor-outer.cursor-click {
-  transform: scale(0.75);
-  border-color: rgba(37, 99, 235, 1);
-}
-.custom-cursor-inner.cursor-hover {
-  width: 10px;
-  height: 10px;
-  top: -5px;
-  left: -5px;
+  top: 0;
+  left: 0;
+  width: 8px;
+  height: 8px;
   background: #2563eb;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 10000000;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 10px rgba(37, 99, 235, 0.85);
+  opacity: 0;
+  will-change: left, top;
 }
 
-/* Hide custom cursor on touch devices */
-@media (hover: none) and (pointer: coarse) {
-  .custom-cursor-outer,
-  .custom-cursor-inner { display: none !important; }
+.custom-cursor-outer.cursor-hover {
+  width: 54px;
+  height: 54px;
+  background: rgba(37, 99, 235, 0.12);
+  border-color: #2563eb;
+  box-shadow: 0 0 22px rgba(37, 99, 235, 0.45);
 }
 
-/* 5. AUTO DEMO CURSOR (hero section) */
-.auto-cursor-demo {
+.custom-cursor-outer.cursor-click {
+  transform: translate(-50%, -50%) scale(0.75);
+  border-color: #1d4ed8;
+  background: rgba(29, 78, 216, 0.3);
+}
+
+/* 4. Automatic Virtual Cursor Demo on Hero Section */
+.virtual-cursor-layer {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   pointer-events: none;
-  z-index: 30;
-  overflow: hidden;
+  z-index: 45;
+  overflow: visible;
 }
 
-.acd-cursor {
-  position: absolute;
-  width: 26px;
-  height: 26px;
-  pointer-events: none;
-  z-index: 31;
-  will-change: transform;
-  /* starts hidden, JS controls visibility */
-  opacity: 0;
-  transition: opacity 0.4s ease;
-}
-
-.acd-cursor-dot {
+.virtual-cursor {
   position: absolute;
   top: 0;
   left: 0;
-  width: 26px;
-  height: 26px;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26' viewBox='0 0 26 26'%3E%3Cpath d='M2 2 L2 20 L7 15 L10 22 L13 21 L10 14 L17 14 Z' fill='%23ffffff' stroke='%232563eb' stroke-width='1.5' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat center/contain;
+  width: 28px;
+  height: 28px;
+  pointer-events: none;
+  z-index: 50;
+  will-change: transform;
+  opacity: 0;
+  transform: translate3d(360px, 480px, 0);
+  transition: opacity 0.35s ease;
 }
 
-.acd-cursor.acd-clicking .acd-cursor-dot {
-  transform: scale(0.85);
-  transition: transform 0.1s ease;
+.virtual-cursor.vc-clicking .vc-arrow {
+  transform: scale(0.82);
+  transition: transform 0.08s ease;
 }
 
-.acd-tooltip {
+.vc-arrow {
+  display: block;
+  transform-origin: 4px 2px;
+  transition: transform 0.15s ease;
+}
+
+.vc-tag {
   position: absolute;
-  background: rgba(15, 23, 42, 0.88);
-  color: #f8fafc;
+  left: 20px;
+  top: 14px;
+  background: #2563eb;
+  color: #ffffff;
   font-family: 'Outfit', sans-serif;
-  font-size: 0.72rem;
-  font-weight: 500;
-  letter-spacing: 0.3px;
-  padding: 5px 10px;
-  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
   white-space: nowrap;
   pointer-events: none;
-  z-index: 32;
+}
+
+.vc-ripple {
+  position: absolute;
+  top: 2px;
+  left: 4px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid #2563eb;
+  background: rgba(37, 99, 235, 0.3);
+  transform: translate(-50%, -50%) scale(0);
+  pointer-events: none;
   opacity: 0;
-  transform: translateY(-4px);
-  transition: opacity 0.3s ease, transform 0.3s ease;
-  backdrop-filter: blur(6px);
-  border: 1px solid rgba(59, 130, 246, 0.25);
-  max-width: 180px;
-  overflow: hidden;
 }
 
-.acd-tooltip.visible {
-  opacity: 1;
-  transform: translateY(0);
+.vc-ripple.active {
+  animation: vcRippleAnim 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* typing cursor blink in tooltip */
-.acd-tooltip .acd-blink {
+@keyframes vcRippleAnim {
+  0% { transform: translate(-50%, -50%) scale(0.2); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(4.8); opacity: 0; }
+}
+
+/* Card Reaction when virtual cursor clicks it */
+.card-auto-active {
+  transform: translateY(-8px) scale(1.03) !important;
+  box-shadow: 0 20px 48px rgba(37, 99, 235, 0.22) !important;
+  border-color: rgba(37, 99, 235, 0.6) !important;
+}
+
+/* 5. Terminal Typing Caret */
+.terminal-cmd .typing-caret {
   display: inline-block;
-  width: 1px;
-  height: 11px;
-  background: #93c5fd;
-  margin-left: 1px;
+  width: 2px;
+  height: 13px;
+  background: #38bdf8;
+  margin-left: 2px;
   vertical-align: middle;
-  animation: acdBlink 0.7s step-end infinite;
+  animation: termCaretBlink 0.7s step-end infinite;
 }
 
-@keyframes acdBlink {
+@keyframes termCaretBlink {
   0%, 100% { opacity: 1; }
   50% { opacity: 0; }
 }
 
-/* 6. HERO ENTRY ANIMATION (after preloader) */
-.hero-section {
-  animation: heroFadeIn 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
-  animation-delay: 3.1s;
+/* 6. Refined Card Hover & Micro-interactions */
+.hero-float-card {
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease, border-color 0.35s ease !important;
 }
-@keyframes heroFadeIn {
-  from { opacity: 0; transform: translateY(16px); }
-  to   { opacity: 1; transform: translateY(0); }
+.hero-btn-primary, .hero-btn-secondary, .about-btn-primary, .about-btn-secondary {
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s ease !important;
 }
-
-/* 7. BUTTON HOVER UPGRADES */
-.hero-btn-primary,
-.hero-btn-secondary,
-.about-btn-primary,
-.about-btn-secondary,
-.submit-btn {
-  transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.22s ease !important;
+.hero-btn-primary:hover, .about-btn-primary:hover {
+  transform: translateY(-3px) scale(1.02) !important;
 }
-.hero-btn-primary:hover,
-.about-btn-primary:hover {
-  transform: translateY(-2px) scale(1.02) !important;
-}
-.hero-btn-secondary:hover,
-.about-btn-secondary:hover {
-  transform: translateY(-2px) !important;
-}
-
-/* 8. CARD HOVER MICRO-INTERACTIONS */
-.hero-float-card,
-.about-metric-card,
-.master-project-card,
-.service-card {
-  transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.32s ease !important;
-}
-.hero-float-card:hover {
-  transform: translateY(-4px) scale(1.015) !important;
-  box-shadow: 0 18px 48px rgba(59, 130, 246, 0.15) !important;
-}
-
-/* 9. NAV HIDE/SHOW ANIMATION UPGRADE */
-.main-nav {
-  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), background 0.35s ease, box-shadow 0.35s ease !important;
-}
-.main-nav.nav-hidden {
-  transform: translateY(-100%) !important;
-}
-
-/* 10. PREFERS REDUCED MOTION */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
-  .hero-section { animation: none !important; }
-  .auto-cursor-demo { display: none !important; }
+.hero-btn-secondary:hover, .about-btn-secondary:hover {
+  transform: translateY(-3px) !important;
 }

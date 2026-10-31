@@ -132,33 +132,33 @@ document.addEventListener("DOMContentLoaded", () => {
       switch (this.mode) {
         case "orange-glow":
           ctx.fillStyle = "#ff6b35";
-          ctx.shadowBlur = 10;
-          ctx.shadowColor = "#ff6b35";
+          // shadowBlur removed for 60fps
+          
           break;
         case "yellow-glow":
           ctx.fillStyle = "#ffd700";
-          ctx.shadowBlur = 12;
-          ctx.shadowColor = "#ffd700";
+          // shadowBlur removed for 60fps
+          
           break;
         case "blue-bubble":
           ctx.fillStyle = "#2563eb";
-          ctx.shadowBlur = 12;
-          ctx.shadowColor = "#2563eb";
+          // shadowBlur removed for 60fps
+          
           break;
         case "red-pulse":
           ctx.fillStyle = "#ec4899";
-          ctx.shadowBlur = 12;
-          ctx.shadowColor = "#ec4899";
+          // shadowBlur removed for 60fps
+          
           break;
         case "electric-purple":
           ctx.fillStyle = "#7c3aed";
-          ctx.shadowBlur = 12;
-          ctx.shadowColor = "#7c3aed";
+          // shadowBlur removed for 60fps
+          
           break;
         default:
           ctx.fillStyle = "#2563eb";
-          ctx.shadowBlur = 10;
-          ctx.shadowColor = "#2563eb";
+          // shadowBlur removed for 60fps
+          
       }
 
       ctx.beginPath();
@@ -219,84 +219,15 @@ window.toggleMenu = function() {
   if (menuIcon) menuIcon.classList.toggle("active");
 };
 
-// ULTRA-SMOOTH MOMENTUM SCROLL ENGINE (60/120 FPS FLUID GLIDE)
-const SmoothScroller = (function() {
-  let targetY = window.pageYOffset || document.documentElement.scrollTop;
-  let currentY = targetY;
-  let isMoving = false;
-  let rafId = null;
-  const ease = 0.088; // Silky fluid momentum damping
-
-  function render() {
-    const diff = targetY - currentY;
-    if (Math.abs(diff) < 0.6) {
-      currentY = targetY;
-      window.scrollTo(0, Math.round(currentY));
-      isMoving = false;
-      return;
-    }
-
-    currentY += diff * ease;
-    window.scrollTo(0, Math.round(currentY));
-
-    if (isMoving) {
-      rafId = requestAnimationFrame(render);
-    }
-  }
-
-  function start() {
-    if (!isMoving) {
-      isMoving = true;
-      rafId = requestAnimationFrame(render);
-    }
-  }
-
-  function setTarget(y) {
-    const maxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
-    targetY = Math.max(0, Math.min(maxScroll, y));
-    start();
-  }
-
-  function onWheel(e) {
-    if (e.ctrlKey || e.metaKey || e.altKey) return;
-    if (e.target.closest("#cvModal, #blogModal, #socialPopup, textarea, select")) return;
-
-    // Detect mouse wheel ticks vs trackpad gestures
-    const isMouseWheel = Math.abs(e.deltaY) >= 30 || e.deltaMode === 1;
-
-    if (isMouseWheel) {
-      e.preventDefault();
-      let delta = e.deltaY;
-      if (e.deltaMode === 1) delta *= 28;
-      delta = Math.max(-95, Math.min(95, delta));
-
-      const maxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
-      targetY = Math.max(0, Math.min(maxScroll, targetY + delta * 1.35));
-      start();
-    } else {
-      // Touchpad has native hardware momentum
-      targetY = window.pageYOffset || document.documentElement.scrollTop;
-      currentY = targetY;
-    }
-  }
-
-  window.addEventListener("scroll", () => {
-    if (!isMoving) {
-      currentY = window.pageYOffset || document.documentElement.scrollTop;
-      targetY = currentY;
-    }
-  }, { passive: true });
-
-  window.addEventListener("wheel", onWheel, { passive: false });
-
-  return {
-    scrollTo: setTarget
-  };
-})();
-
+// NATIVE SMOOTH SCROLL (uses browser-native smooth scrolling - zero lag)
 function smoothScrollTo(targetY) {
-  SmoothScroller.scrollTo(targetY);
+  window.scrollTo({
+    top: Math.max(0, Math.round(targetY)),
+    behavior: 'smooth'
+  });
 }
+
+
 
 // Scrollspy with Smooth Hide-on-Scroll & Reappear-on-Stop Navigation (Throttled & Non-blocking)
 function initScrollspy() {
@@ -1012,15 +943,66 @@ document.addEventListener("DOMContentLoaded", () => {
   if (yearEl) yearEl.textContent = new Date().getFullYear();
 });
 
+// ============================================================
+// 15. LENIS ULTRA-SMOOTH INERTIAL SCROLL ENGINE
+// ============================================================
+(function initLenisScroll() {
+  if (typeof Lenis === "undefined") {
+    console.warn("Lenis library loading fallback to native smooth scroll");
+    return;
+  }
+
+  const lenis = new Lenis({
+    duration: 1.15,
+    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    orientation: 'vertical',
+    gestureOrientation: 'vertical',
+    smoothWheel: true,
+    wheelMultiplier: 1.0,
+    smoothTouch: false, // native hardware smooth touch on mobile & trackpads
+    touchMultiplier: 1.5,
+    infinite: false,
+  });
+
+  window.lenis = lenis;
+
+  function raf(time) {
+    lenis.raf(time);
+    requestAnimationFrame(raf);
+  }
+  requestAnimationFrame(raf);
+
+  // Sync all scroll listeners (scrollspy, AOS, navbar, back-to-top) with Lenis momentum
+  lenis.on('scroll', (e) => {
+    window.dispatchEvent(new Event('scroll'));
+    if (window.AOS) window.AOS.refresh();
+  });
+
+  // Intercept hash anchor links for buttery glide
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+      const targetId = this.getAttribute('href');
+      if (targetId && targetId !== '#' && document.querySelector(targetId)) {
+        e.preventDefault();
+        const targetEl = document.querySelector(targetId);
+        lenis.scrollTo(targetEl, { offset: -70, duration: 1.15 });
+
+        // Close mobile nav if opened
+        const nav = document.getElementById("navLinks");
+        const menuIcon = document.querySelector(".menu-icon");
+        if (nav && nav.classList.contains("show")) {
+          nav.classList.remove("show");
+          if (menuIcon) menuIcon.classList.remove("active");
+        }
+      }
+    });
+  });
+})();
 
 // ============================================================
-// 15. PREMIUM CUSTOM CURSOR (desktop only)
+// 16. REAL INTERACTIVE CUSTOM CURSOR (60/120 FPS FLUID GLIDE)
 // ============================================================
 (function initCustomCursor() {
-  // Only on non-touch devices
-  if (window.matchMedia("(hover: none) and (pointer: coarse)").matches) return;
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
   const outer = document.createElement("div");
   outer.className = "custom-cursor-outer";
   const inner = document.createElement("div");
@@ -1030,297 +1012,225 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let mouseX = -100, mouseY = -100;
   let outerX = -100, outerY = -100;
-  let rafId = null;
+  let isCursorActive = false;
 
+  // Render loop with fluid lerp
+  function renderCursor() {
+    outerX += (mouseX - outerX) * 0.22;
+    outerY += (mouseY - outerY) * 0.22;
+
+    outer.style.left = `${outerX}px`;
+    outer.style.top = `${outerY}px`;
+    inner.style.left = `${mouseX}px`;
+    inner.style.top = `${mouseY}px`;
+
+    requestAnimationFrame(renderCursor);
+  }
+  requestAnimationFrame(renderCursor);
+
+  // Activate custom cursor immediately on first mouse move
   document.addEventListener("mousemove", (e) => {
     mouseX = e.clientX;
     mouseY = e.clientY;
-    // Inner follows immediately
-    inner.style.transform = `translate(${mouseX}px, ${mouseY}px)`;
-    if (!rafId) rafId = requestAnimationFrame(animateCursor);
+
+    if (!isCursorActive) {
+      isCursorActive = true;
+      document.body.classList.add("custom-cursor-active");
+      outer.style.opacity = "1";
+      inner.style.opacity = "1";
+      outerX = mouseX;
+      outerY = mouseY;
+    }
   }, { passive: true });
 
-  function animateCursor() {
-    const dx = mouseX - outerX;
-    const dy = mouseY - outerY;
-    outerX += dx * 0.14;
-    outerY += dy * 0.14;
-    outer.style.transform = `translate(${outerX}px, ${outerY}px)`;
-    if (Math.abs(dx) > 0.3 || Math.abs(dy) > 0.3) {
-      rafId = requestAnimationFrame(animateCursor);
-    } else {
-      rafId = null;
-    }
-  }
+  document.addEventListener("mouseleave", () => {
+    outer.style.opacity = "0";
+    inner.style.opacity = "0";
+  });
 
-  // Hover effects
-  const hoverTargets = "a, button, .hero-float-card, .about-metric-card, .master-project-card, .service-card, .about-tab-btn, .tech-orb, .social-circle, .social-pill";
+  document.addEventListener("mouseenter", () => {
+    if (isCursorActive) {
+      outer.style.opacity = "1";
+      inner.style.opacity = "1";
+    }
+  });
+
+  // Interactive hover targets for subtle aura expansion
+  const hoverSelector = "a, button, .hero-btn-primary, .hero-btn-secondary, .about-btn-primary, .about-btn-secondary, .hero-float-card, .about-metric-card, .master-project-card, .service-card, .about-tab-btn, .tech-orb, .social-circle, .social-pill, .bca-badge, input, textarea";
+
   document.addEventListener("mouseover", (e) => {
-    if (e.target.closest(hoverTargets)) {
+    if (e.target.closest(hoverSelector)) {
       outer.classList.add("cursor-hover");
-      inner.classList.add("cursor-hover");
     }
   }, { passive: true });
 
   document.addEventListener("mouseout", (e) => {
-    if (e.target.closest(hoverTargets)) {
+    if (e.target.closest(hoverSelector)) {
       outer.classList.remove("cursor-hover");
-      inner.classList.remove("cursor-hover");
     }
   }, { passive: true });
 
   document.addEventListener("mousedown", () => {
     outer.classList.add("cursor-click");
-  }, { passive: true });
+  });
 
   document.addEventListener("mouseup", () => {
     outer.classList.remove("cursor-click");
-  }, { passive: true });
-
-  // Hide default cursor site-wide
-  document.documentElement.style.cursor = "none";
-  document.addEventListener("mouseleave", () => { outer.style.opacity = "0"; inner.style.opacity = "0"; });
-  document.addEventListener("mouseenter", () => { outer.style.opacity = "1"; inner.style.opacity = "1"; });
+  });
 })();
 
 // ============================================================
-// 16. PREMIUM SCROLL REVEAL (IntersectionObserver for all sections)
+// 17. AUTOMATIC VIRTUAL CURSOR DEMO ON HERO SECTION
+// (Glide -> Click -> Live Type -> Explore Cards -> Smooth Exit)
 // ============================================================
-(function initPremiumScrollReveal() {
-  if (!("IntersectionObserver" in window)) return;
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    document.querySelectorAll(".reveal-section").forEach(el => {
-      el.classList.add("revealed");
-    });
-    return;
-  }
+(function initVirtualCursorDemo() {
+  const cursor = document.getElementById("virtualCursor");
+  const ripple = document.getElementById("vcRipple");
+  const terminalCmd = document.getElementById("heroTerminalCmd");
+  const terminalStatus = document.getElementById("heroTerminalStatus");
+  const cardRocket = document.querySelector(".card-rocket");
+  const cardPerf = document.querySelector(".card-performance");
+  const cardIdeas = document.querySelector(".card-ideas");
+  const stage = document.querySelector(".hero-stage");
 
-  const sections = document.querySelectorAll(
-    "section, .about-metric-card, .about-tabs-card-exact, .master-project-card, .service-card, .contact-form-card, footer"
-  );
+  if (!cursor || !stage) return;
 
-  sections.forEach(el => {
-    el.classList.add("reveal-section");
-    // Also add staggered children for cards inside sections
-    const staggerable = el.querySelectorAll(
-      ".hero-float-card, .about-metric-card, .master-project-card, .service-card, .skill-category-card, .timeline-item, .about-timeline-item"
-    );
-    staggerable.forEach(child => child.classList.add("reveal-child"));
-  });
-
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add("revealed");
-        observer.unobserve(entry.target); // Fire once for performance
-      }
-    });
-  }, {
-    root: null,
-    rootMargin: "0px 0px -60px 0px",
-    threshold: 0.08
-  });
-
-  sections.forEach(el => observer.observe(el));
-})();
-
-// ============================================================
-// 18. AUTO-DEMO CURSOR ANIMATION ON HERO SECTION
-// ============================================================
-(function initAutoCursorDemo() {
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
-  const cursorEl = document.getElementById("acdCursor");
-  const tooltipEl = document.getElementById("acdTooltip");
-  const demoWrap = document.getElementById("autoCursorDemo");
-  if (!cursorEl || !tooltipEl || !demoWrap) return;
-
-  // Animation sequence — cursor moves between hero elements and simulates interaction
-  const steps = [
-    // Step: Move to code card area and "click"
-    { x: 22, y: 38, duration: 1200, action: null, tooltip: "" },
-    { x: 22, y: 38, duration: 400, action: "click", tooltip: "const developer = {" },
-    { x: 22, y: 38, duration: 800, action: "type", typeText: "// Building amazing things...", tooltip: "// Building amazing things..." },
-    // Move to rocket card (top right)
-    { x: 72, y: 18, duration: 1000, action: null, tooltip: "" },
-    { x: 72, y: 18, duration: 350, action: "click", tooltip: "Real-World Products ✓" },
-    // Move to tech icon area (bottom)
-    { x: 45, y: 82, duration: 900, action: null, tooltip: "" },
-    { x: 45, y: 82, duration: 300, action: "click", tooltip: "React • Node • Python" },
-    // Move to creative problem solver card
-    { x: 18, y: 62, duration: 900, action: null, tooltip: "" },
-    { x: 18, y: 62, duration: 350, action: "click", tooltip: "From Ideas to Solutions ✓" },
-    // Move to person image center
-    { x: 50, y: 45, duration: 1100, action: null, tooltip: "" },
-    // Disappear
-    { x: 50, y: 45, duration: 800, action: "leave", tooltip: "" },
-  ];
-
-  let stepIndex = 0;
-  let currentX = 50;
-  let currentY = 50;
-  let rafId = null;
-  let loopTimer = null;
-  let isVisible = false;
   let isRunning = false;
+  let animTimer = null;
 
-  function setPos(x, y) {
-    // x,y are percentages relative to hero-right section
-    cursorEl.style.left = x + "%";
-    cursorEl.style.top = y + "%";
-    tooltipEl.style.left = (x + 3) + "%";
-    tooltipEl.style.top = (y - 10) + "%";
-  }
-
-  function showCursor() {
-    cursorEl.style.opacity = "1";
-    isVisible = true;
-  }
-
-  function hideCursor() {
-    cursorEl.style.opacity = "0";
-    tooltipEl.classList.remove("visible");
-    isVisible = false;
-  }
-
-  function showTooltip(text) {
-    if (!text) {
-      tooltipEl.classList.remove("visible");
-      tooltipEl.textContent = "";
-      return;
-    }
-    tooltipEl.textContent = text;
-    tooltipEl.classList.add("visible");
-  }
-
-  function typeTooltip(text, cb) {
-    let i = 0;
-    tooltipEl.innerHTML = '<span class="acd-blink"></span>';
-    tooltipEl.classList.add("visible");
-
-    function addChar() {
-      if (i < text.length) {
-        tooltipEl.innerHTML = text.substring(0, i + 1) + '<span class="acd-blink"></span>';
-        i++;
-        setTimeout(addChar, 45 + Math.random() * 30);
-      } else {
-        setTimeout(() => {
-          tooltipEl.classList.remove("visible");
-          if (cb) cb();
-        }, 800);
-      }
-    }
-    addChar();
-  }
-
-  // Smooth move animation using lerp
-  function moveTo(targetX, targetY, duration, onDone) {
-    const startX = currentX;
-    const startY = currentY;
-    const startTime = performance.now();
-
-    function frame(now) {
-      const elapsed = now - startTime;
-      const t = Math.min(elapsed / duration, 1);
-      // Ease in-out cubic
-      const ease = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-      currentX = startX + (targetX - startX) * ease;
-      currentY = startY + (targetY - startY) * ease;
-      setPos(currentX, currentY);
-
-      if (t < 1) {
-        rafId = requestAnimationFrame(frame);
-      } else {
-        currentX = targetX;
-        currentY = targetY;
-        if (onDone) onDone();
-      }
-    }
-    rafId = requestAnimationFrame(frame);
-  }
-
-  function runStep() {
-    if (!isRunning) return;
-    const step = steps[stepIndex];
-    stepIndex = (stepIndex + 1) % steps.length;
-
-    if (step.action === "leave") {
-      hideCursor();
-      // Wait before restarting
-      loopTimer = setTimeout(() => {
-        stepIndex = 0;
-        currentX = 50; currentY = 80;
-        setPos(currentX, currentY);
-        showCursor();
-        showTooltip(""); 
-        loopTimer = setTimeout(runStep, 600);
-      }, 2200);
-      return;
-    }
-
-    moveTo(step.x, step.y, step.duration, () => {
-      if (step.action === "click") {
-        cursorEl.classList.add("acd-clicking");
-        showTooltip(step.tooltip);
-        setTimeout(() => {
-          cursorEl.classList.remove("acd-clicking");
-          loopTimer = setTimeout(runStep, 500);
-        }, 200);
-      } else if (step.action === "type") {
-        cursorEl.classList.add("acd-clicking");
-        setTimeout(() => { cursorEl.classList.remove("acd-clicking"); }, 150);
-        typeTooltip(step.typeText, () => {
-          loopTimer = setTimeout(runStep, 200);
-        });
-      } else {
-        showTooltip(step.tooltip);
-        loopTimer = setTimeout(runStep, 100);
-      }
+  // Move virtual cursor with CSS transform
+  function moveCursor(x, y, duration = 800) {
+    return new Promise(resolve => {
+      cursor.style.transition = `transform ${duration}ms cubic-bezier(0.22, 1, 0.36, 1), opacity 0.4s ease`;
+      cursor.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+      setTimeout(resolve, duration);
     });
   }
 
-  // Start the demo after preloader (after 3.5s) and only when hero is in view
-  function startDemo() {
+  // Trigger click ripple animation
+  function clickAt(x, y) {
+    return new Promise(resolve => {
+      cursor.classList.add("vc-clicking");
+      if (ripple) {
+        ripple.classList.remove("active");
+        void ripple.offsetWidth; // trigger reflow
+        ripple.classList.add("active");
+      }
+      setTimeout(() => {
+        cursor.classList.remove("vc-clicking");
+        resolve();
+      }, 220);
+    });
+  }
+
+  // Live type text into an element with character delays
+  function liveType(element, text, speed = 55) {
+    return new Promise(resolve => {
+      element.innerHTML = '<span class="typing-caret"></span>';
+      let i = 0;
+      function nextChar() {
+        if (i < text.length) {
+          element.innerHTML = text.substring(0, i + 1) + '<span class="typing-caret"></span>';
+          i++;
+          setTimeout(nextChar, speed + Math.random() * 25);
+        } else {
+          // Leave caret blinking briefly
+          setTimeout(() => {
+            element.innerHTML = text;
+            resolve();
+          }, 400);
+        }
+      }
+      nextChar();
+    });
+  }
+
+  const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+  async function runDemoLoop() {
+    if (!isRunning) return;
+
+    // Responsive coordinate mapping relative to hero-stage (580x580 baseline)
+    const stageRect = stage.getBoundingClientRect();
+    const scale = stageRect.width > 0 ? (stageRect.width / 580) : 1;
+
+    // Step 0: Initial position off to bottom-right
+    cursor.style.transition = "none";
+    cursor.style.transform = `translate3d(${Math.round(440 * scale)}px, ${Math.round(500 * scale)}px, 0)`;
+    cursor.style.opacity = "0";
+
+    await sleep(200);
+    if (!isRunning) return;
+
+    // Step 1: Smoothly fade in and glide to developer.js code terminal
+    cursor.style.opacity = "1";
+    await moveCursor(Math.round(150 * scale), Math.round(218 * scale), 950);
+    await sleep(200);
+
+    // Step 2: Click on terminal
+    await clickAt();
+    await sleep(250);
+
+    // Step 3: Live type command into terminal
+    if (terminalCmd) {
+      await liveType(terminalCmd, "> npm run build --prod", 45);
+    }
+    if (terminalStatus) {
+      terminalStatus.innerHTML = '<span style="color:#10b981;font-weight:600;">Build optimized in 0.3s <i class="fas fa-check-circle"></i></span>';
+    }
+    await sleep(700);
+
+    // Step 4: Glide to Real-World Products rocket card
+    await moveCursor(Math.round(420 * scale), Math.round(75 * scale), 850);
+    await sleep(150);
+    await clickAt();
+    if (cardRocket) cardRocket.classList.add("card-auto-active");
+    await sleep(550);
+    if (cardRocket) cardRocket.classList.remove("card-auto-active");
+
+    // Step 5: Glide to Clean & Scalable Code card
+    await moveCursor(Math.round(430 * scale), Math.round(215 * scale), 750);
+    await sleep(150);
+    await clickAt();
+    if (cardPerf) cardPerf.classList.add("card-auto-active");
+    await sleep(550);
+    if (cardPerf) cardPerf.classList.remove("card-auto-active");
+
+    // Step 6: Glide to Creative Problem Solver card
+    await moveCursor(Math.round(110 * scale), Math.round(315 * scale), 800);
+    await sleep(150);
+    await clickAt();
+    if (cardIdeas) cardIdeas.classList.add("card-auto-active");
+    await sleep(550);
+    if (cardIdeas) cardIdeas.classList.remove("card-auto-active");
+
+    // Step 7: Glide off towards bottom-center and gracefully fade out
+    await moveCursor(Math.round(320 * scale), Math.round(520 * scale), 850);
+    cursor.style.opacity = "0";
+    await sleep(850);
+
+    // Step 8: Reset terminal text back to original
+    if (terminalCmd) terminalCmd.textContent = "> npm run dev";
+    if (terminalStatus) terminalStatus.innerHTML = 'Compiled successfully <i class="fas fa-check"></i>';
+
+    // Step 9: Pause before repeating the cycle
+    await sleep(2800);
+    if (isRunning) {
+      runDemoLoop();
+    }
+  }
+
+  function start() {
     if (isRunning) return;
     isRunning = true;
-    showCursor();
-    setPos(50, 80);
-    loopTimer = setTimeout(runStep, 400);
+    runDemoLoop();
   }
 
-  function stopDemo() {
-    isRunning = false;
-    if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
-    if (loopTimer) { clearTimeout(loopTimer); loopTimer = null; }
-    hideCursor();
-    stepIndex = 0;
-  }
+  // Launch right after preloader finishes (3.2 seconds)
+  window.addEventListener("load", () => {
+    setTimeout(start, 3200);
+  });
 
-  // Use IntersectionObserver to start/stop
-  if ("IntersectionObserver" in window) {
-    const heroSection = document.getElementById("home");
-    if (heroSection) {
-      const obs = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting && !isRunning) {
-            setTimeout(startDemo, 3600); // after preloader
-          } else if (!entry.isIntersecting) {
-            stopDemo();
-          }
-        });
-      }, { threshold: 0.4 });
-      obs.observe(heroSection);
-    }
-  } else {
-    setTimeout(startDemo, 3600);
-  }
-
-  // Pause demo when user moves real mouse over hero
-  const heroRight = document.querySelector(".hero-right");
-  if (heroRight) {
-    heroRight.addEventListener("mouseenter", stopDemo, { passive: true });
-    heroRight.addEventListener("mouseleave", () => {
-      setTimeout(startDemo, 1500);
-    }, { passive: true });
-  }
+  // Fallback if user already visited
+  setTimeout(start, 3500);
 })();
