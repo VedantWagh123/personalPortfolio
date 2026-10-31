@@ -1000,115 +1000,30 @@ document.addEventListener("DOMContentLoaded", () => {
 })();
 
 // ============================================================
-// 16. REAL INTERACTIVE CUSTOM CURSOR (60/120 FPS FLUID GLIDE)
-// ============================================================
-(function initCustomCursor() {
-  const outer = document.createElement("div");
-  outer.className = "custom-cursor-outer";
-  const inner = document.createElement("div");
-  inner.className = "custom-cursor-inner";
-  document.body.appendChild(outer);
-  document.body.appendChild(inner);
-
-  let mouseX = -100, mouseY = -100;
-  let outerX = -100, outerY = -100;
-  let isCursorActive = false;
-
-  // Render loop with fluid lerp
-  function renderCursor() {
-    outerX += (mouseX - outerX) * 0.22;
-    outerY += (mouseY - outerY) * 0.22;
-
-    outer.style.left = `${outerX}px`;
-    outer.style.top = `${outerY}px`;
-    inner.style.left = `${mouseX}px`;
-    inner.style.top = `${mouseY}px`;
-
-    requestAnimationFrame(renderCursor);
-  }
-  requestAnimationFrame(renderCursor);
-
-  // Activate custom cursor immediately on first mouse move
-  document.addEventListener("mousemove", (e) => {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-
-    if (!isCursorActive) {
-      isCursorActive = true;
-      document.body.classList.add("custom-cursor-active");
-      outer.style.opacity = "1";
-      inner.style.opacity = "1";
-      outerX = mouseX;
-      outerY = mouseY;
-    }
-  }, { passive: true });
-
-  document.addEventListener("mouseleave", () => {
-    outer.style.opacity = "0";
-    inner.style.opacity = "0";
-  });
-
-  document.addEventListener("mouseenter", () => {
-    if (isCursorActive) {
-      outer.style.opacity = "1";
-      inner.style.opacity = "1";
-    }
-  });
-
-  // Interactive hover targets for subtle aura expansion
-  const hoverSelector = "a, button, .hero-btn-primary, .hero-btn-secondary, .about-btn-primary, .about-btn-secondary, .hero-float-card, .about-metric-card, .master-project-card, .service-card, .about-tab-btn, .tech-orb, .social-circle, .social-pill, .bca-badge, input, textarea";
-
-  document.addEventListener("mouseover", (e) => {
-    if (e.target.closest(hoverSelector)) {
-      outer.classList.add("cursor-hover");
-    }
-  }, { passive: true });
-
-  document.addEventListener("mouseout", (e) => {
-    if (e.target.closest(hoverSelector)) {
-      outer.classList.remove("cursor-hover");
-    }
-  }, { passive: true });
-
-  document.addEventListener("mousedown", () => {
-    outer.classList.add("cursor-click");
-  });
-
-  document.addEventListener("mouseup", () => {
-    outer.classList.remove("cursor-click");
-  });
-})();
-
-// ============================================================
-// 17. AUTOMATIC VIRTUAL CURSOR DEMO ON HERO SECTION
-// (Glide -> Click -> Live Type -> Explore Cards -> Smooth Exit)
+// 16. AUTOMATIC VIRTUAL CURSOR DEMO ON HERO SECTION
+// (Glide Up from Below -> Click Terminal -> Live Type -> Fade Out)
 // ============================================================
 (function initVirtualCursorDemo() {
   const cursor = document.getElementById("virtualCursor");
   const ripple = document.getElementById("vcRipple");
   const terminalCmd = document.getElementById("heroTerminalCmd");
   const terminalStatus = document.getElementById("heroTerminalStatus");
-  const cardRocket = document.querySelector(".card-rocket");
-  const cardPerf = document.querySelector(".card-performance");
-  const cardIdeas = document.querySelector(".card-ideas");
+  const cardCode = document.querySelector(".card-code");
   const stage = document.querySelector(".hero-stage");
 
-  if (!cursor || !stage) return;
+  if (!cursor || !stage || !terminalCmd) return;
 
   let isRunning = false;
-  let animTimer = null;
 
-  // Move virtual cursor with CSS transform
-  function moveCursor(x, y, duration = 800) {
+  function moveCursor(x, y, duration = 1000) {
     return new Promise(resolve => {
-      cursor.style.transition = `transform ${duration}ms cubic-bezier(0.22, 1, 0.36, 1), opacity 0.4s ease`;
+      cursor.style.transition = `transform ${duration}ms cubic-bezier(0.16, 1, 0.3, 1), opacity 0.45s ease`;
       cursor.style.transform = `translate3d(${x}px, ${y}px, 0)`;
       setTimeout(resolve, duration);
     });
   }
 
-  // Trigger click ripple animation
-  function clickAt(x, y) {
+  function clickAt() {
     return new Promise(resolve => {
       cursor.classList.add("vc-clicking");
       if (ripple) {
@@ -1116,14 +1031,19 @@ document.addEventListener("DOMContentLoaded", () => {
         void ripple.offsetWidth; // trigger reflow
         ripple.classList.add("active");
       }
+      if (cardCode) {
+        cardCode.classList.add("card-auto-active");
+      }
       setTimeout(() => {
         cursor.classList.remove("vc-clicking");
+        if (cardCode) {
+          setTimeout(() => cardCode.classList.remove("card-auto-active"), 400);
+        }
         resolve();
-      }, 220);
+      }, 240);
     });
   }
 
-  // Live type text into an element with character delays
   function liveType(element, text, speed = 55) {
     return new Promise(resolve => {
       element.innerHTML = '<span class="typing-caret"></span>';
@@ -1134,11 +1054,10 @@ document.addEventListener("DOMContentLoaded", () => {
           i++;
           setTimeout(nextChar, speed + Math.random() * 25);
         } else {
-          // Leave caret blinking briefly
           setTimeout(() => {
             element.innerHTML = text;
             resolve();
-          }, 400);
+          }, 350);
         }
       }
       nextChar();
@@ -1150,71 +1069,69 @@ document.addEventListener("DOMContentLoaded", () => {
   async function runDemoLoop() {
     if (!isRunning) return;
 
-    // Responsive coordinate mapping relative to hero-stage (580x580 baseline)
+    // Dynamically calculate the exact terminal coordinates inside hero-stage
     const stageRect = stage.getBoundingClientRect();
-    const scale = stageRect.width > 0 ? (stageRect.width / 580) : 1;
+    const termRect = terminalCmd.getBoundingClientRect();
 
-    // Step 0: Initial position off to bottom-right
+    let targetX = 145;
+    let targetY = 220;
+
+    if (stageRect.width > 0 && termRect.width > 0) {
+      targetX = Math.round(termRect.left - stageRect.left + 15);
+      targetY = Math.round(termRect.top - stageRect.top - 2);
+    }
+
+    const startX = targetX + 25;
+    const startY = targetY + 230; // Visibly starts from below (niche se)
+
+    // Step 0: Position below the card, invisible
     cursor.style.transition = "none";
-    cursor.style.transform = `translate3d(${Math.round(440 * scale)}px, ${Math.round(500 * scale)}px, 0)`;
+    cursor.style.transform = `translate3d(${startX}px, ${startY}px, 0)`;
     cursor.style.opacity = "0";
 
-    await sleep(200);
+    await sleep(250);
     if (!isRunning) return;
 
-    // Step 1: Smoothly fade in and glide to developer.js code terminal
+    // Step 1: Fade in and smoothly glide UPWARDS to the terminal line
     cursor.style.opacity = "1";
-    await moveCursor(Math.round(150 * scale), Math.round(218 * scale), 950);
+    await moveCursor(targetX, targetY, 1150);
+    await sleep(280);
+
+    // Step 2: Click on the terminal command line
+    await clickAt();
     await sleep(200);
 
-    // Step 2: Click on terminal
-    await clickAt();
-    await sleep(250);
+    // Step 3: Proper smooth typewriter animation
+    await liveType(terminalCmd, "> npm run build --prod", 50);
 
-    // Step 3: Live type command into terminal
-    if (terminalCmd) {
-      await liveType(terminalCmd, "> npm run build --prod", 45);
-    }
+    // Step 4: Show success confirmation with green check
     if (terminalStatus) {
-      terminalStatus.innerHTML = '<span style="color:#10b981;font-weight:600;">Build optimized in 0.3s <i class="fas fa-check-circle"></i></span>';
+      terminalStatus.style.transition = "opacity 0.3s ease, transform 0.3s ease";
+      terminalStatus.style.opacity = "0";
+      terminalStatus.style.transform = "translateY(4px)";
+      await sleep(150);
+      terminalStatus.innerHTML = '<span style="color:#10b981;font-weight:600;">✓ Compiled successfully in 0.2s</span>';
+      terminalStatus.style.opacity = "1";
+      terminalStatus.style.transform = "translateY(0)";
     }
-    await sleep(700);
 
-    // Step 4: Glide to Real-World Products rocket card
-    await moveCursor(Math.round(420 * scale), Math.round(75 * scale), 850);
-    await sleep(150);
-    await clickAt();
-    if (cardRocket) cardRocket.classList.add("card-auto-active");
-    await sleep(550);
-    if (cardRocket) cardRocket.classList.remove("card-auto-active");
+    // Step 5: Pause so user can clearly see the typed command and success message
+    await sleep(1200);
 
-    // Step 5: Glide to Clean & Scalable Code card
-    await moveCursor(Math.round(430 * scale), Math.round(215 * scale), 750);
-    await sleep(150);
-    await clickAt();
-    if (cardPerf) cardPerf.classList.add("card-auto-active");
-    await sleep(550);
-    if (cardPerf) cardPerf.classList.remove("card-auto-active");
-
-    // Step 6: Glide to Creative Problem Solver card
-    await moveCursor(Math.round(110 * scale), Math.round(315 * scale), 800);
-    await sleep(150);
-    await clickAt();
-    if (cardIdeas) cardIdeas.classList.add("card-auto-active");
-    await sleep(550);
-    if (cardIdeas) cardIdeas.classList.remove("card-auto-active");
-
-    // Step 7: Glide off towards bottom-center and gracefully fade out
-    await moveCursor(Math.round(320 * scale), Math.round(520 * scale), 850);
+    // Step 6: Smoothly glide down-right and gracefully fade away
+    const exitX = targetX + 130;
+    const exitY = targetY + 220;
     cursor.style.opacity = "0";
-    await sleep(850);
+    await moveCursor(exitX, exitY, 950);
 
-    // Step 8: Reset terminal text back to original
+    // Step 7: Wait before resetting and repeating
+    await sleep(1400);
+
+    // Reset terminal content back to original
     if (terminalCmd) terminalCmd.textContent = "> npm run dev";
     if (terminalStatus) terminalStatus.innerHTML = 'Compiled successfully <i class="fas fa-check"></i>';
 
-    // Step 9: Pause before repeating the cycle
-    await sleep(2800);
+    await sleep(2600);
     if (isRunning) {
       runDemoLoop();
     }
@@ -1226,11 +1143,11 @@ document.addEventListener("DOMContentLoaded", () => {
     runDemoLoop();
   }
 
-  // Launch right after preloader finishes (3.2 seconds)
+  // Start after preloader completes
   window.addEventListener("load", () => {
     setTimeout(start, 3200);
   });
 
-  // Fallback if user already visited
+  // Fallback trigger if page already loaded
   setTimeout(start, 3500);
 })();

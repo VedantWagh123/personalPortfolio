@@ -5917,71 +5917,7 @@ footer,
   background: #1e40af !important;
 }
 
-/* 3. Real Interactive Custom Cursor (Instant 60fps tracking) */
-body.custom-cursor-active,
-body.custom-cursor-active a,
-body.custom-cursor-active button,
-body.custom-cursor-active input,
-body.custom-cursor-active textarea,
-body.custom-cursor-active [role="button"],
-body.custom-cursor-active .hero-float-card,
-body.custom-cursor-active * {
-  cursor: none !important;
-}
-
-.custom-cursor-outer {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 36px;
-  height: 36px;
-  border: 2px solid rgba(37, 99, 235, 0.7);
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 9999999;
-  transform: translate(-50%, -50%);
-  transition: width 0.22s cubic-bezier(0.16, 1, 0.3, 1),
-              height 0.22s cubic-bezier(0.16, 1, 0.3, 1),
-              background 0.22s ease,
-              border-color 0.22s ease,
-              box-shadow 0.22s ease,
-              opacity 0.2s ease;
-  box-shadow: 0 0 14px rgba(37, 99, 235, 0.25);
-  opacity: 0;
-  will-change: left, top, width, height, transform;
-}
-
-.custom-cursor-inner {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 8px;
-  height: 8px;
-  background: #2563eb;
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 10000000;
-  transform: translate(-50%, -50%);
-  box-shadow: 0 0 10px rgba(37, 99, 235, 0.85);
-  opacity: 0;
-  will-change: left, top;
-}
-
-.custom-cursor-outer.cursor-hover {
-  width: 54px;
-  height: 54px;
-  background: rgba(37, 99, 235, 0.12);
-  border-color: #2563eb;
-  box-shadow: 0 0 22px rgba(37, 99, 235, 0.45);
-}
-
-.custom-cursor-outer.cursor-click {
-  transform: translate(-50%, -50%) scale(0.75);
-  border-color: #1d4ed8;
-  background: rgba(29, 78, 216, 0.3);
-}
-
-/* 4. Automatic Virtual Cursor Demo on Hero Section */
+/* 3. Automatic Virtual Cursor Demo on Hero Section */
 .virtual-cursor-layer {
   position: absolute;
   top: 0;
@@ -6001,14 +5937,13 @@ body.custom-cursor-active * {
   height: 28px;
   pointer-events: none;
   z-index: 50;
-  will-change: transform;
+  will-change: transform, opacity;
   opacity: 0;
-  transform: translate3d(360px, 480px, 0);
-  transition: opacity 0.35s ease;
+  transform: translate3d(120px, 450px, 0);
 }
 
 .virtual-cursor.vc-clicking .vc-arrow {
-  transform: scale(0.82);
+  transform: scale(0.82) rotate(-2deg);
   transition: transform 0.08s ease;
 }
 
@@ -6018,54 +5953,38 @@ body.custom-cursor-active * {
   transition: transform 0.15s ease;
 }
 
-.vc-tag {
-  position: absolute;
-  left: 20px;
-  top: 14px;
-  background: #2563eb;
-  color: #ffffff;
-  font-family: 'Outfit', sans-serif;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.4px;
-  padding: 2px 7px;
-  border-radius: 999px;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
-  white-space: nowrap;
-  pointer-events: none;
-}
-
 .vc-ripple {
   position: absolute;
   top: 2px;
   left: 4px;
-  width: 12px;
-  height: 12px;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
-  border: 2px solid #2563eb;
-  background: rgba(37, 99, 235, 0.3);
+  border: 2px solid #38bdf8;
+  background: rgba(56, 189, 248, 0.35);
   transform: translate(-50%, -50%) scale(0);
   pointer-events: none;
   opacity: 0;
 }
 
 .vc-ripple.active {
-  animation: vcRippleAnim 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: vcRippleAnim 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @keyframes vcRippleAnim {
-  0% { transform: translate(-50%, -50%) scale(0.2); opacity: 1; }
+  0% { transform: translate(-50%, -50%) scale(0.2); opacity: 0.9; }
   100% { transform: translate(-50%, -50%) scale(4.8); opacity: 0; }
 }
 
-/* Card Reaction when virtual cursor clicks it */
-.card-auto-active {
-  transform: translateY(-8px) scale(1.03) !important;
-  box-shadow: 0 20px 48px rgba(37, 99, 235, 0.22) !important;
-  border-color: rgba(37, 99, 235, 0.6) !important;
+/* Card subtle pulse when virtual cursor clicks */
+.card-code.card-auto-active {
+  transform: translateY(-4px) scale(1.015) !important;
+  box-shadow: 0 24px 50px rgba(37, 99, 235, 0.25) !important;
+  border-color: rgba(56, 189, 248, 0.6) !important;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease !important;
 }
 
-/* 5. Terminal Typing Caret */
+/* 4. Terminal Typing Caret */
 .terminal-cmd .typing-caret {
   display: inline-block;
   width: 2px;
@@ -6073,7 +5992,7 @@ body.custom-cursor-active * {
   background: #38bdf8;
   margin-left: 2px;
   vertical-align: middle;
-  animation: termCaretBlink 0.7s step-end infinite;
+  animation: termCaretBlink 0.65s step-end infinite;
 }
 
 @keyframes termCaretBlink {
@@ -6081,7 +6000,7 @@ body.custom-cursor-active * {
   50% { opacity: 0; }
 }
 
-/* 6. Refined Card Hover & Micro-interactions */
+/* 5. Refined Card Hover & Micro-interactions */
 .hero-float-card {
   transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease, border-color 0.35s ease !important;
 }
