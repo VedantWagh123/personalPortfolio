@@ -1333,18 +1333,15 @@ if (document.readyState === "loading") {
 
 
 // ============================================================
-// DIRECT HOVER PREVIEW, DOUBLE-CLICK PIN & 3S LIGHT-GREEN BUTTON
+// DYNAMIC SIDE-PREVIEW WINDOW (MOUSE FOLLOW, 3S LIGHT-GREEN BUTTON, PIN)
 // ============================================================
 function initDraggableProjectPreview() {
   const modal = document.getElementById("floatingProjectPreview");
-  const header = document.getElementById("floatingPreviewHeader");
   const stage = document.getElementById("floatingImageStage");
   const cornerClose = document.getElementById("floatingCornerClose");
-  const macClose = document.getElementById("macCloseDot");
   const modalTitle = document.getElementById("floatingModalTitle");
   const modalImg = document.getElementById("floatingModalImg");
   const modalTag = document.getElementById("floatingModalTag");
-  const modalDesc = document.getElementById("floatingModalDesc");
   const liveBtn = document.getElementById("floatingLiveBtn");
   const ghBtn = document.getElementById("floatingGithubBtn");
   const timerPill = document.getElementById("previewCountdownPill");
@@ -1356,74 +1353,131 @@ function initDraggableProjectPreview() {
   let countdownInterval = null;
   let countdownTimeout = null;
   let hoverLeaveTimeout = null;
-  let hoverIntentTimeout = null;
   let isPinned = false;
-  let currentActiveCard = null;
+  let currentCard = null;
+  let isModalHovered = false;
+  let isDragging = false;
+  let cardRect = null;
+  let baseSideX = 0;
+  let sideChosen = "right";
+
+  function computeSidePosition(card, clientX, clientY) {
+    if (isPinned || isDragging || isModalHovered) return;
+    if (!card) return;
+
+    cardRect = card.getBoundingClientRect();
+    const modalW = modal.offsetWidth || 530;
+    const modalH = modal.offsetHeight || 330;
+
+    const roomRight = window.innerWidth - cardRect.right;
+    const roomLeft = cardRect.left;
+
+    // Place to the side of the card (not on top of the card!)
+    if (roomRight >= modalW + 24) {
+      sideChosen = "right";
+      baseSideX = cardRect.right + 20;
+    } else if (roomLeft >= modalW + 24) {
+      sideChosen = "left";
+      baseSideX = cardRect.left - modalW - 20;
+    } else {
+      // Best fit
+      if (roomRight >= roomLeft) {
+        sideChosen = "right";
+        baseSideX = Math.max(12, window.innerWidth - modalW - 15);
+      } else {
+        sideChosen = "left";
+        baseSideX = 15;
+      }
+    }
+
+    // Relative mouse position within card (-0.5 to +0.5)
+    let normX = 0;
+    let normY = 0;
+    if (clientX !== undefined && clientY !== undefined) {
+      normX = Math.min(1, Math.max(0, (clientX - cardRect.left) / cardRect.width)) - 0.5;
+      normY = Math.min(1, Math.max(0, (clientY - cardRect.top) / cardRect.height)) - 0.5;
+    }
+
+    // Dynamic movement: preview screen moves as mouse moves!
+    let finalX = baseSideX + (normX * 45);
+    const pointerY = (clientY !== undefined) ? clientY : (cardRect.top + cardRect.height / 2);
+    let finalY = (pointerY - modalH * 0.45) + (normY * 30);
+
+    // Bounds clamping
+    finalX = Math.max(12, Math.min(window.innerWidth - modalW - 12, finalX));
+    finalY = Math.max(15, Math.min(window.innerHeight - modalH - 15, finalY));
+
+    modal.style.left = finalX + "px";
+    modal.style.top = finalY + "px";
+
+    // 3D perspective tilt reacting to mouse position!
+    const tiltX = (-normY * 12).toFixed(1);
+    const tiltY = (normX * 12).toFixed(1);
+    modal.style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale(1.01)`;
+  }
 
   function openPreview(card, data, e) {
-    currentActiveCard = card;
-    modalTitle.textContent = data.title || "Project Preview";
-    modalImg.src = data.img || "";
-    modalTag.textContent = data.tag || "Full Stack";
-    modalDesc.textContent = data.desc || "";
-    liveBtn.href = data.live || "#";
-    ghBtn.href = data.github || "#";
+    currentCard = card;
+    if (modalTitle) modalTitle.textContent = data.title || "Project Preview";
+    if (modalImg) modalImg.src = data.img || "";
+    if (modalTag) modalTag.textContent = data.tag || "Full Stack";
+    if (liveBtn) liveBtn.href = data.live || "#";
+    if (ghBtn) ghBtn.href = data.github || "#";
 
     // Reset countdown and light green live button
     if (countdownInterval) clearInterval(countdownInterval);
     if (countdownTimeout) clearTimeout(countdownTimeout);
 
-    liveBtn.style.display = "none";
-    timerPill.style.display = "inline-flex";
-    let secondsLeft = 3;
-    timerSec.textContent = secondsLeft;
+    if (liveBtn) liveBtn.style.display = "none";
+    if (timerPill) {
+      timerPill.style.display = "inline-flex";
+      let secondsLeft = 3;
+      if (timerSec) timerSec.textContent = secondsLeft;
 
-    countdownInterval = setInterval(() => {
-      secondsLeft--;
-      if (secondsLeft > 0) {
-        timerSec.textContent = secondsLeft;
-      } else {
-        clearInterval(countdownInterval);
-      }
-    }, 1000);
+      countdownInterval = setInterval(() => {
+        secondsLeft--;
+        if (secondsLeft > 0) {
+          if (timerSec) timerSec.textContent = secondsLeft;
+        } else {
+          clearInterval(countdownInterval);
+        }
+      }, 1000);
 
-    countdownTimeout = setTimeout(() => {
-      timerPill.style.display = "none";
-      liveBtn.style.display = "inline-flex";
-    }, 3000);
+      countdownTimeout = setTimeout(() => {
+        timerPill.style.display = "none";
+        if (liveBtn) liveBtn.style.display = "inline-flex";
+      }, 3000);
+    }
 
-    // Position centered or near cursor
     modal.style.display = "block";
+    modal.classList.remove("is-dragging");
+
     if (!isPinned) {
-      pinBadge.style.display = "none";
-      const modalW = modal.offsetWidth || 760;
-      const modalH = modal.offsetHeight || 500;
-      const startX = Math.max(15, (window.innerWidth - modalW) / 2);
-      const startY = Math.max(25, (window.innerHeight - modalH) / 2);
-      modal.style.left = startX + "px";
-      modal.style.top = startY + "px";
-      modal.style.transform = "none";
+      if (pinBadge) pinBadge.style.display = "none";
+      computeSidePosition(card, e.clientX, e.clientY);
     }
   }
 
   function closePreview() {
     modal.style.display = "none";
+    modal.style.transform = "none";
     isPinned = false;
-    currentActiveCard = null;
-    pinBadge.style.display = "none";
+    currentCard = null;
+    isModalHovered = false;
+    if (pinBadge) pinBadge.style.display = "none";
     if (countdownInterval) clearInterval(countdownInterval);
     if (countdownTimeout) clearTimeout(countdownTimeout);
     if (hoverLeaveTimeout) clearTimeout(hoverLeaveTimeout);
-    if (hoverIntentTimeout) clearTimeout(hoverIntentTimeout);
   }
 
   function setPinned(pinned) {
     isPinned = pinned;
     if (isPinned) {
-      pinBadge.style.display = "inline-flex";
+      if (pinBadge) pinBadge.style.display = "inline-flex";
+      modal.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)";
       if (hoverLeaveTimeout) clearTimeout(hoverLeaveTimeout);
     } else {
-      pinBadge.style.display = "none";
+      if (pinBadge) pinBadge.style.display = "none";
     }
   }
 
@@ -1432,21 +1486,16 @@ function initDraggableProjectPreview() {
     e.stopPropagation();
     closePreview();
   });
-  if (macClose) macClose.addEventListener("click", (e) => {
-    e.stopPropagation();
-    closePreview();
-  });
 
-  // Double click to pin (User requested: agar user 2 bar o img pe click krta hai toh o image waha rehni chaiye hatni nahi chiaye)
+  // Double click to pin
   function handleDoubleClick(e) {
     e.stopPropagation();
     setPinned(true);
   }
-
   if (stage) stage.addEventListener("dblclick", handleDoubleClick);
   if (modalImg) modalImg.addEventListener("dblclick", handleDoubleClick);
 
-  // Click outside to dismiss (User requested: also user side mai kahi touch krta hai toh preview hatt jana chaiye ok)
+  // Outside click to dismiss
   document.addEventListener("pointerdown", (e) => {
     if (modal.style.display !== "none") {
       const isInsideModal = modal.contains(e.target);
@@ -1457,15 +1506,13 @@ function initDraggableProjectPreview() {
     }
   });
 
-  // Attach Hover triggers to all project cards
+  // Card triggers
   const allCards = document.querySelectorAll(".featured-project-card, .compact-project-card");
   allCards.forEach(card => {
-    const triggerTarget = card.querySelector(".card-preview-area") || card.querySelector(".compact-thumb-wrap") || card;
-
-    // Hover Enter: Direct preview
-    triggerTarget.addEventListener("mouseenter", (e) => {
+    // Hover Enter: Opens to side
+    card.addEventListener("mouseenter", (e) => {
       if (hoverLeaveTimeout) clearTimeout(hoverLeaveTimeout);
-      if (isPinned && modal.style.display !== "none") return; // Keep pinned preview intact
+      if (isPinned && modal.style.display !== "none") return;
 
       const data = {
         title: card.getAttribute("data-title") || card.querySelector("h3, h4")?.textContent || "Project Preview",
@@ -1476,55 +1523,63 @@ function initDraggableProjectPreview() {
         desc: card.getAttribute("data-desc") || card.querySelector(".card-desc, .compact-desc")?.textContent || ""
       };
 
-      if (hoverIntentTimeout) clearTimeout(hoverIntentTimeout);
-      hoverIntentTimeout = setTimeout(() => {
-        openPreview(card, data, e);
-      }, 120); // Quick, natural hover responsiveness
+      openPreview(card, data, e);
     });
 
-    // Hover Leave: Grace period before closing (unless pinned)
-    triggerTarget.addEventListener("mouseleave", () => {
-      if (hoverIntentTimeout) clearTimeout(hoverIntentTimeout);
-      if (!isPinned && modal.style.display !== "none") {
+    // Mouse Move on Card: Preview moves along with mouse dynamically!
+    card.addEventListener("mousemove", (e) => {
+      if (isPinned || isDragging || isModalHovered) return;
+      if (modal.style.display === "none") return;
+      computeSidePosition(card, e.clientX, e.clientY);
+    });
+
+    // Hover Leave
+    card.addEventListener("mouseleave", () => {
+      if (!isPinned && modal.style.display !== "none" && !isModalHovered) {
         hoverLeaveTimeout = setTimeout(() => {
-          closePreview();
-        }, 350); // 350ms grace period so user can move mouse onto preview modal
+          if (!isModalHovered) closePreview();
+        }, 320);
       }
     });
 
-    // Double click on card preview directly also pins it
-    triggerTarget.addEventListener("dblclick", (e) => {
+    // Direct double-click on card triggers pin
+    card.addEventListener("dblclick", (e) => {
       e.stopPropagation();
       setPinned(true);
     });
   });
 
-  // Mouse entering modal keeps it open
+  // When mouse enters modal: keep open and steady for easy interaction
   modal.addEventListener("mouseenter", () => {
+    isModalHovered = true;
     if (hoverLeaveTimeout) clearTimeout(hoverLeaveTimeout);
-  });
-
-  // Mouse leaving modal closes it (if not pinned)
-  modal.addEventListener("mouseleave", () => {
-    if (!isPinned && modal.style.display !== "none") {
-      hoverLeaveTimeout = setTimeout(() => {
-        closePreview();
-      }, 350);
+    if (!isPinned) {
+      modal.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1.02)";
     }
   });
 
-  // DRAGGING SYSTEM (Desktop + Touch Mobile, Fluid 60fps)
-  let isDragging = false;
+  // When mouse leaves modal
+  modal.addEventListener("mouseleave", () => {
+    isModalHovered = false;
+    if (!isPinned && modal.style.display !== "none") {
+      hoverLeaveTimeout = setTimeout(() => {
+        closePreview();
+      }, 320);
+    }
+  });
+
+  // Draggable logic for user to move anywhere
   let startMouseX = 0;
   let startMouseY = 0;
   let initialModalLeft = 0;
   let initialModalTop = 0;
 
   function onPointerDown(e) {
-    if (e.target.closest(".corner-cross-btn") || e.target.closest(".mac-dot.red") || e.target.closest(".floating-live-btn-green") || e.target.closest(".btn-floating-gh")) {
+    if (e.target.closest(".corner-cross-btn") || e.target.closest(".floating-live-btn-green") || e.target.closest(".floating-gh-mini-btn")) {
       return;
     }
     isDragging = true;
+    modal.classList.add("is-dragging");
     const clientX = e.clientX || (e.touches && e.touches[0].clientX) || 0;
     const clientY = e.clientY || (e.touches && e.touches[0].clientY) || 0;
     startMouseX = clientX;
@@ -1532,7 +1587,6 @@ function initDraggableProjectPreview() {
     const rect = modal.getBoundingClientRect();
     initialModalLeft = rect.left;
     initialModalTop = rect.top;
-    header.style.cursor = "grabbing";
     if (stage) stage.style.cursor = "grabbing";
     e.preventDefault();
   }
@@ -1547,14 +1601,10 @@ function initDraggableProjectPreview() {
     let newLeft = initialModalLeft + deltaX;
     let newTop = initialModalTop + deltaY;
 
-    // Bounds clamping so modal stays on screen
     const modalW = modal.offsetWidth;
     const modalH = modal.offsetHeight;
-    const maxLeft = window.innerWidth - modalW - 10;
-    const maxTop = window.innerHeight - modalH - 10;
-
-    newLeft = Math.max(10, Math.min(newLeft, maxLeft));
-    newTop = Math.max(10, Math.min(newTop, maxTop));
+    newLeft = Math.max(10, Math.min(newLeft, window.innerWidth - modalW - 10));
+    newTop = Math.max(10, Math.min(newTop, window.innerHeight - modalH - 10));
 
     modal.style.left = newLeft + "px";
     modal.style.top = newTop + "px";
@@ -1563,17 +1613,16 @@ function initDraggableProjectPreview() {
   function onPointerUp() {
     if (!isDragging) return;
     isDragging = false;
-    header.style.cursor = "grab";
+    modal.classList.remove("is-dragging");
     if (stage) stage.style.cursor = "grab";
   }
 
-  header.addEventListener("mousedown", onPointerDown);
-  if (stage) stage.addEventListener("mousedown", onPointerDown);
+  if (stage) {
+    stage.addEventListener("mousedown", onPointerDown);
+    stage.addEventListener("touchstart", onPointerDown, { passive: false });
+  }
   window.addEventListener("mousemove", onPointerMove);
   window.addEventListener("mouseup", onPointerUp);
-
-  header.addEventListener("touchstart", onPointerDown, { passive: false });
-  if (stage) stage.addEventListener("touchstart", onPointerDown, { passive: false });
   window.addEventListener("touchmove", onPointerMove, { passive: false });
   window.addEventListener("touchend", onPointerUp);
 }

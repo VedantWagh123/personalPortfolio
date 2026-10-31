@@ -1891,8 +1891,8 @@
     }
   </script>
 
-  <!-- Floating Draggable Interactive Project Preview Window (Borderless & Clean UI) -->
-  <div id="floatingProjectPreview" class="floating-preview-modal borderless-clean" style="display: none;">
+  <!-- Floating Interactive Side-Preview Window (Direct Image Box, Dynamic Float, Borderless) -->
+  <div id="floatingProjectPreview" class="floating-side-preview borderless-clean" style="display: none;">
     <!-- Corner Cross Close Button -->
     <button class="corner-cross-btn" id="floatingCornerClose" title="Close Preview">
       <i class="fas fa-times"></i>
@@ -1900,47 +1900,35 @@
 
     <!-- Pinned Indicator Badge -->
     <div class="preview-pinned-indicator" id="previewPinnedIndicator" style="display: none;">
-      <i class="fas fa-thumbtack"></i> Pinned (Double-Clicked)
+      <i class="fas fa-thumbtack"></i> Pinned
     </div>
 
-    <!-- Drag Header -->
-    <div class="floating-preview-header" id="floatingPreviewHeader">
-      <div class="floating-drag-dots">
-        <span class="mac-dot red" id="macCloseDot" title="Close"></span>
-        <span class="mac-dot yellow" title="Drag"></span>
-        <span class="mac-dot green" title="Flexible"></span>
-        <span class="drag-hint-pill"><i class="fas fa-arrows-alt"></i> Drag anywhere &bull; Double-click to pin</span>
-      </div>
-      <div class="floating-preview-title" id="floatingModalTitle">Project Preview</div>
+    <!-- Floating Subtle Project Pill (Top-Left) -->
+    <div class="preview-project-pill" id="previewProjectPill">
+      <span class="preview-pill-dot"></span>
+      <span class="preview-pill-title" id="floatingModalTitle">Project Preview</span>
+      <span class="preview-pill-tag" id="floatingModalTag">Full Stack</span>
     </div>
 
-    <div class="floating-preview-body">
-      <div class="floating-image-stage" id="floatingImageStage" title="Double click to pin / Drag to move">
-        <img id="floatingModalImg" src="" alt="Project Live Preview" />
-        
-        <!-- 3-Second Live Countdown Pill -->
-        <div class="preview-countdown-pill" id="previewCountdownPill">
-          <i class="fas fa-circle-notch fa-spin"></i> Live preview in <span id="previewSecondsCount">3</span>s...
-        </div>
+    <!-- Direct Image Box (Clean, Borderless, Aspect-Ratio Mockup Display) -->
+    <div class="floating-image-stage" id="floatingImageStage" title="Double click to pin / Drag anywhere">
+      <img id="floatingModalImg" src="" alt="Project Live Preview" />
 
-        <!-- Light Green Live Preview Button (Appears automatically after 3 seconds) -->
-        <a id="floatingLiveBtn" href="#" target="_blank" class="floating-live-btn-green" style="display: none;">
-          <span class="live-dot-pulse"></span>
-          <i class="fas fa-external-link-alt"></i> Live Preview
-        </a>
+      <!-- 3-Second Live Countdown Pill -->
+      <div class="preview-countdown-pill" id="previewCountdownPill">
+        <i class="fas fa-circle-notch fa-spin"></i> Live in <span id="previewSecondsCount">3</span>s...
       </div>
 
-      <div class="floating-preview-footer">
-        <div class="floating-footer-info">
-          <span class="floating-tag-pill" id="floatingModalTag">Category</span>
-          <p class="floating-desc-text" id="floatingModalDesc">Project Description</p>
-        </div>
-        <div class="floating-footer-actions">
-          <a id="floatingGithubBtn" href="#" target="_blank" class="btn-floating-gh">
-            <i class="fab fa-github"></i> GitHub
-          </a>
-        </div>
-      </div>
+      <!-- Light Green Live Preview Button (Appears automatically after 3 seconds) -->
+      <a id="floatingLiveBtn" href="#" target="_blank" class="floating-live-btn-green" style="display: none;">
+        <span class="live-dot-pulse"></span>
+        <i class="fas fa-external-link-alt"></i> Live Preview
+      </a>
+
+      <!-- Quick Action: GitHub Link Floating (Bottom-Left) -->
+      <a id="floatingGithubBtn" href="#" target="_blank" class="floating-gh-mini-btn" title="View GitHub Repository">
+        <i class="fab fa-github"></i>
+      </a>
     </div>
   </div>
 
