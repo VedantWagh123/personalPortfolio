@@ -1176,3 +1176,131 @@ document.addEventListener("DOMContentLoaded", () => {
 
   setTimeout(pulseRandomTitle, 3000);
 })();
+
+
+// ============================================================
+// PIXEL-PERFECT PROJECTS SECTION: FILTERS, TOGGLE & STATS
+// ============================================================
+function initProjectsInteractions() {
+  const filterPills = document.querySelectorAll(".projects-filter-nav .filter-pill");
+  const featuredCards = document.querySelectorAll(".featured-project-card");
+  const compactCards = document.querySelectorAll(".compact-project-card");
+  const toggleBtn = document.getElementById("toggleAllProjectsBtn");
+  const toggleText = document.getElementById("toggleProjectsText");
+  const toggleArrow = document.getElementById("toggleProjectsArrow");
+  const extraCards = document.querySelectorAll(".compact-project-card.extra-project");
+
+  let isExpanded = false;
+
+  // Initial state: hide extra compact cards if in 'all' view
+  function updateCardVisibility(currentFilter) {
+    if (currentFilter === "all") {
+      featuredCards.forEach(c => c.style.display = "");
+      compactCards.forEach(c => {
+        if (c.classList.contains("extra-project")) {
+          c.style.display = isExpanded ? "flex" : "none";
+        } else {
+          c.style.display = "flex";
+        }
+      });
+      if (toggleBtn) toggleBtn.parentElement.style.display = "flex";
+    } else {
+      // Filtered view: hide/show based on category
+      featuredCards.forEach(c => {
+        const cat = c.getAttribute("data-category") || "";
+        c.style.display = cat.includes(currentFilter) ? "" : "none";
+      });
+      compactCards.forEach(c => {
+        const cat = c.getAttribute("data-category") || "";
+        c.style.display = cat.includes(currentFilter) ? "flex" : "none";
+      });
+      // In filtered view, hide the View All toggle button
+      if (toggleBtn) toggleBtn.parentElement.style.display = "none";
+    }
+  }
+
+  // Filter Pill Click
+  filterPills.forEach(pill => {
+    pill.addEventListener("click", () => {
+      filterPills.forEach(p => p.classList.remove("active"));
+      pill.classList.add("active");
+      const filter = pill.getAttribute("data-filter");
+      updateCardVisibility(filter);
+    });
+  });
+
+  // Toggle View All Projects Click
+  if (toggleBtn) {
+    toggleBtn.addEventListener("click", () => {
+      isExpanded = !isExpanded;
+      if (isExpanded) {
+        extraCards.forEach(c => {
+          c.style.display = "flex";
+          c.style.opacity = "0";
+          c.style.transform = "translateY(15px)";
+          setTimeout(() => {
+            c.style.transition = "opacity 0.4s ease, transform 0.4s ease";
+            c.style.opacity = "1";
+            c.style.transform = "translateY(0)";
+          }, 50);
+        });
+        if (toggleText) toggleText.textContent = "Show Less";
+        if (toggleArrow) toggleArrow.className = "fas fa-arrow-up";
+      } else {
+        extraCards.forEach(c => {
+          c.style.display = "none";
+        });
+        if (toggleText) toggleText.textContent = "View All Projects (10+)";
+        if (toggleArrow) toggleArrow.className = "fas fa-arrow-right";
+        // Smooth scroll back to projects section
+        const projSec = document.getElementById("projects");
+        if (projSec) {
+          projSec.scrollIntoView({ behavior: "smooth" });
+        }
+      }
+    });
+  }
+
+  // Set initial visibility
+  updateCardVisibility("all");
+
+  // Animate 4 Stats in Bar
+  const statNums = document.querySelectorAll(".projects-stats-bar .stat-num");
+  if (statNums.length > 0 && "IntersectionObserver" in window) {
+    const statObserver = new IntersectionObserver((entries, obs) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          statNums.forEach(el => {
+            const target = parseInt(el.getAttribute("data-count"), 10);
+            if (!isNaN(target)) {
+              let current = 0;
+              const duration = 1200;
+              const step = Math.max(1, target / (duration / 25));
+              const timer = setInterval(() => {
+                current += step;
+                if (current >= target) {
+                  const isPct = el.nextElementSibling?.textContent?.includes("Satisfaction");
+                  el.textContent = target + (isPct ? "%" : "+");
+                  clearInterval(timer);
+                } else {
+                  el.textContent = Math.floor(current) + "+";
+                }
+              }, 25);
+            }
+          });
+          obs.disconnect();
+        }
+      });
+    }, { threshold: 0.3 });
+
+    const statsBar = document.querySelector(".projects-stats-bar");
+    if (statsBar) statObserver.observe(statsBar);
+  }
+}
+
+// Auto-run on DOM ready
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initProjectsInteractions);
+} else {
+  initProjectsInteractions();
+}
