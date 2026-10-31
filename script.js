@@ -136,7 +136,7 @@ document.addEventListener("DOMContentLoaded", () => {
           
           break;
         case "yellow-glow":
-          ctx.fillStyle = "#ffd700";
+          ctx.fillStyle = "#f59e0b";
           // shadowBlur removed for 60fps
           
           break;
@@ -775,7 +775,7 @@ function initTestimonials() {
     function highlightStars(score) {
       stars.forEach(s => {
         const val = parseInt(s.getAttribute("data-rating"), 10);
-        s.style.color = val <= score ? "#ffd700" : "rgba(255,255,255,0.2)";
+        s.style.color = val <= score ? "#f59e0b" : "#cbd5e1";
       });
     }
 
