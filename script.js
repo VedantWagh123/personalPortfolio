@@ -1330,3 +1330,180 @@ if (document.readyState === "loading") {
 } else {
   initProjectsInteractions();
 }
+
+
+// ============================================================
+// INTERACTIVE DRAGGABLE PROJECT PREVIEW & 3S LIVE BUTTON
+// ============================================================
+function initDraggableProjectPreview() {
+  const modal = document.getElementById("floatingProjectPreview");
+  const header = document.getElementById("floatingPreviewHeader");
+  const closeBtn = document.getElementById("floatingCloseBtn");
+  const macClose = document.getElementById("macCloseDot");
+  const modalTitle = document.getElementById("floatingModalTitle");
+  const modalImg = document.getElementById("floatingModalImg");
+  const modalTag = document.getElementById("floatingModalTag");
+  const modalDesc = document.getElementById("floatingModalDesc");
+  const liveBtn = document.getElementById("floatingLiveBtn");
+  const ghBtn = document.getElementById("floatingGithubBtn");
+  const timerPill = document.getElementById("previewCountdownPill");
+  const timerSec = document.getElementById("previewSecondsCount");
+
+  if (!modal || !header) return;
+
+  let countdownInterval = null;
+  let countdownTimeout = null;
+
+  function openPreview(data) {
+    modalTitle.textContent = data.title || "Project Preview";
+    modalImg.src = data.img || "";
+    modalTag.textContent = data.tag || "Full Stack";
+    modalDesc.textContent = data.desc || "";
+    liveBtn.href = data.live || "#";
+    ghBtn.href = data.github || "#";
+
+    // Reset countdown and light green live button
+    if (countdownInterval) clearInterval(countdownInterval);
+    if (countdownTimeout) clearTimeout(countdownTimeout);
+
+    liveBtn.style.display = "none";
+    timerPill.style.display = "inline-flex";
+    let secondsLeft = 3;
+    timerSec.textContent = secondsLeft;
+
+    countdownInterval = setInterval(() => {
+      secondsLeft--;
+      if (secondsLeft > 0) {
+        timerSec.textContent = secondsLeft;
+      } else {
+        clearInterval(countdownInterval);
+      }
+    }, 1000);
+
+    countdownTimeout = setTimeout(() => {
+      timerPill.style.display = "none";
+      liveBtn.style.display = "inline-flex";
+    }, 3000);
+
+    // Position centered in viewport
+    modal.style.display = "block";
+    const modalW = modal.offsetWidth || 760;
+    const modalH = modal.offsetHeight || 520;
+    const startX = Math.max(15, (window.innerWidth - modalW) / 2);
+    const startY = Math.max(25, (window.innerHeight - modalH) / 2);
+    modal.style.left = startX + "px";
+    modal.style.top = startY + "px";
+    modal.style.transform = "none";
+  }
+
+  function closePreview() {
+    modal.style.display = "none";
+    if (countdownInterval) clearInterval(countdownInterval);
+    if (countdownTimeout) clearTimeout(countdownTimeout);
+  }
+
+  if (closeBtn) closeBtn.addEventListener("click", closePreview);
+  if (macClose) macClose.addEventListener("click", closePreview);
+
+  // Attach click listeners to cards
+  const allCards = document.querySelectorAll(".featured-project-card, .compact-project-card");
+  allCards.forEach(card => {
+    const previewArea = card.querySelector(".card-preview-area") || card.querySelector(".compact-thumb-wrap");
+    if (previewArea) {
+      previewArea.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const data = {
+          title: card.getAttribute("data-title") || card.querySelector("h3, h4")?.textContent || "Project Preview",
+          img: card.getAttribute("data-img") || card.querySelector("img")?.src || "",
+          live: card.getAttribute("data-live") || card.querySelector(".btn-action.secondary")?.href || "#",
+          github: card.getAttribute("data-github") || card.querySelector("a[href*='github']")?.href || "#",
+          tag: card.getAttribute("data-tag") || card.querySelector(".category-pill-tag")?.textContent || "Project",
+          desc: card.getAttribute("data-desc") || card.querySelector(".card-desc, .compact-desc")?.textContent || ""
+        };
+        openPreview(data);
+      });
+    }
+
+    const viewProjBtn = card.querySelector(".btn-action.primary");
+    if (viewProjBtn) {
+      viewProjBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const data = {
+          title: card.getAttribute("data-title") || card.querySelector("h3, h4")?.textContent || "Project Preview",
+          img: card.getAttribute("data-img") || card.querySelector("img")?.src || "",
+          live: card.getAttribute("data-live") || "#",
+          github: card.getAttribute("data-github") || "#",
+          tag: card.getAttribute("data-tag") || "Project",
+          desc: card.getAttribute("data-desc") || ""
+        };
+        openPreview(data);
+      });
+    }
+  });
+
+  // DRAGGING SYSTEM (Desktop + Touch Mobile)
+  let isDragging = false;
+  let startMouseX = 0;
+  let startMouseY = 0;
+  let initialModalLeft = 0;
+  let initialModalTop = 0;
+
+  function onPointerDown(e) {
+    if (e.target.closest(".floating-close-btn") || e.target.closest(".mac-dot.red")) return;
+    isDragging = true;
+    const clientX = e.clientX || (e.touches && e.touches[0].clientX) || 0;
+    const clientY = e.clientY || (e.touches && e.touches[0].clientY) || 0;
+    startMouseX = clientX;
+    startMouseY = clientY;
+    const rect = modal.getBoundingClientRect();
+    initialModalLeft = rect.left;
+    initialModalTop = rect.top;
+    header.style.cursor = "grabbing";
+    e.preventDefault();
+  }
+
+  function onPointerMove(e) {
+    if (!isDragging) return;
+    const clientX = e.clientX || (e.touches && e.touches[0].clientX) || 0;
+    const clientY = e.clientY || (e.touches && e.touches[0].clientY) || 0;
+    const deltaX = clientX - startMouseX;
+    const deltaY = clientY - startMouseY;
+
+    let newLeft = initialModalLeft + deltaX;
+    let newTop = initialModalTop + deltaY;
+
+    // Bounds clamping
+    const modalW = modal.offsetWidth;
+    const modalH = modal.offsetHeight;
+    const maxLeft = window.innerWidth - modalW - 10;
+    const maxTop = window.innerHeight - modalH - 10;
+
+    newLeft = Math.max(10, Math.min(newLeft, maxLeft));
+    newTop = Math.max(10, Math.min(newTop, maxTop));
+
+    modal.style.left = newLeft + "px";
+    modal.style.top = newTop + "px";
+  }
+
+  function onPointerUp() {
+    if (!isDragging) return;
+    isDragging = false;
+    header.style.cursor = "grab";
+  }
+
+  header.addEventListener("mousedown", onPointerDown);
+  window.addEventListener("mousemove", onPointerMove);
+  window.addEventListener("mouseup", onPointerUp);
+
+  header.addEventListener("touchstart", onPointerDown, { passive: false });
+  window.addEventListener("touchmove", onPointerMove, { passive: false });
+  window.addEventListener("touchend", onPointerUp);
+}
+
+// Initialize on DOM ready
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initDraggableProjectPreview);
+} else {
+  initDraggableProjectPreview();
+}
