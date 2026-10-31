@@ -1335,6 +1335,111 @@ if (document.readyState === "loading") {
 // ============================================================
 // DYNAMIC SIDE-PREVIEW WINDOW (IMG-ONLY TRIGGER, 60FPS LERP PHYSICS, 3S LIGHT-GREEN BUTTON)
 // ============================================================
+// ============================================================
+// DYNAMIC 2-AT-A-TIME SERVICE HEADINGS TYPEWRITER ANIMATION
+// ============================================================
+function initServicesTypewriter() {
+  const headings = document.querySelectorAll(".service-title-rgb");
+  if (!headings.length) return;
+
+  const items = Array.from(headings).map(h => {
+    let textSpan = h.querySelector(".typewriter-text");
+    let cursorSpan = h.querySelector(".typewriter-cursor");
+    const full = h.getAttribute("data-full-text") || h.textContent.trim();
+    if (!textSpan) {
+      h.innerHTML = `<span class="typewriter-text">${full}</span><span class="typewriter-cursor">|</span>`;
+      textSpan = h.querySelector(".typewriter-text");
+      cursorSpan = h.querySelector(".typewriter-cursor");
+    }
+    return {
+      element: h,
+      textSpan: textSpan,
+      cursorSpan: cursorSpan,
+      fullText: full,
+      isTyping: false
+    };
+  });
+
+  // Exactly 2 cards can be actively animating at any given time
+  const MAX_ACTIVE = 2;
+  const activeIndices = new Set();
+
+  function runCardTypewriter(index) {
+    const item = items[index];
+    if (!item || item.isTyping) return;
+
+    item.isTyping = true;
+    activeIndices.add(index);
+    if (item.cursorSpan) item.cursorSpan.classList.add("active");
+
+    const full = item.fullText;
+    let currentLength = full.length;
+
+    // Step 1: Hold briefly before backspacing
+    setTimeout(() => {
+      // Step 2: Smooth deleting character by character
+      const deleteInterval = setInterval(() => {
+        if (currentLength > 0) {
+          currentLength--;
+          item.textSpan.textContent = full.slice(0, currentLength);
+        } else {
+          clearInterval(deleteInterval);
+          // Step 3: Brief pause when completely deleted
+          setTimeout(() => {
+            // Step 4: Type back forward smoothly character by character
+            const typeInterval = setInterval(() => {
+              if (currentLength < full.length) {
+                currentLength++;
+                item.textSpan.textContent = full.slice(0, currentLength);
+              } else {
+                clearInterval(typeInterval);
+                // Step 5: Finished typing! Hold cursor briefly then hide
+                setTimeout(() => {
+                  if (item.cursorSpan) item.cursorSpan.classList.remove("active");
+                  item.isTyping = false;
+                  activeIndices.delete(index);
+
+                  // Pick next dynamic card after a natural pause
+                  setTimeout(pickNextPairOrCard, 1200 + Math.random() * 1500);
+                }, 1600);
+              }
+            }, 65 + Math.random() * 20); // Smooth 65-85ms typing cadence
+          }, 350);
+        }
+      }, 35); // 35ms smooth backspace
+    }, 1000 + Math.random() * 1000);
+  }
+
+  function pickNextPairOrCard() {
+    if (activeIndices.size >= MAX_ACTIVE) return;
+
+    // Available cards that are not typing right now
+    const available = [];
+    for (let i = 0; i < items.length; i++) {
+      if (!activeIndices.has(i)) available.push(i);
+    }
+    if (!available.length) return;
+
+    // Pick random available card
+    const chosenIndex = available[Math.floor(Math.random() * available.length)];
+    runCardTypewriter(chosenIndex);
+  }
+
+  // Start with 2 random distinct cards after page load (staggered for organic rhythm)
+  setTimeout(() => {
+    const idx1 = Math.floor(Math.random() * items.length);
+    let idx2 = Math.floor(Math.random() * items.length);
+    while (idx2 === idx1 && items.length > 1) {
+      idx2 = Math.floor(Math.random() * items.length);
+    }
+
+    runCardTypewriter(idx1);
+    setTimeout(() => {
+      runCardTypewriter(idx2);
+    }, 1400);
+  }, 2000);
+}
+
 function initDraggableProjectPreview() {
   const modal = document.getElementById("floatingProjectPreview");
   const stage = document.getElementById("floatingImageStage");
@@ -1689,8 +1794,13 @@ function initDraggableProjectPreview() {
 }
 
 // Initialize on DOM ready
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", initDraggableProjectPreview);
-} else {
+function initServicesAndPreview() {
   initDraggableProjectPreview();
+  initServicesTypewriter();
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initServicesAndPreview);
+} else {
+  initServicesAndPreview();
 }

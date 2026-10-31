@@ -6106,30 +6106,38 @@ footer,
 }
 
 .services-profile-card {
-  background: #ffffff !important;
-  border: 1px solid #e2e8f0 !important;
-  border-radius: 12px !important;
-  overflow: hidden !important;
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04) !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  overflow: visible !important;
+  box-shadow: none !important;
   display: flex !important;
   justify-content: center !important;
-  align-items: center !important;
-  padding: 8px !important;
+  align-items: flex-end !important;
+  padding: 0 !important;
+  margin-bottom: -6px !important;
 }
 
 .services-profile-img-wrap {
   width: 100% !important;
-  border-radius: 14px !important;
-  overflow: hidden !important;
-  background: #f8fafc !important;
+  border-radius: 0 !important;
+  overflow: visible !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  display: flex !important;
+  justify-content: center !important;
 }
 
 .services-dev-img {
   width: 100% !important;
+  max-width: 360px !important;
   height: auto !important;
   display: block !important;
-  object-fit: cover !important;
-  border-radius: 14px !important;
+  object-fit: contain !important;
+  border-radius: 0 !important;
+  border: none !important;
+  background: transparent !important;
   transition: transform 0.4s ease !important;
 }
 
@@ -6314,13 +6322,39 @@ footer,
   line-height: 1.35 !important;
   margin: 0 0 8px 0 !important;
   letter-spacing: -0.2px !important;
-  display: inline-block !important;
+  display: block !important;
+  min-height: 2.85rem !important;
   background: linear-gradient(135deg, #0f172a 0%, #2563eb 25%, #7c3aed 50%, #06b6d4 75%, #0f172a 100%) !important;
   background-size: 300% 300% !important;
   -webkit-background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
   background-clip: text !important;
   transition: filter 0.3s ease !important;
+}
+
+.typewriter-text {
+  display: inline;
+}
+
+.typewriter-cursor {
+  display: inline-block;
+  color: #2563eb;
+  -webkit-text-fill-color: #2563eb;
+  font-weight: 300;
+  margin-left: 2px;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  vertical-align: baseline;
+}
+
+.typewriter-cursor.active {
+  opacity: 1;
+  animation: typewriterBlink 0.75s infinite ease-in-out;
+}
+
+@keyframes typewriterBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
 }
 
 /* Staggered non-synchronized random color shifts so they never shift at the same time */
