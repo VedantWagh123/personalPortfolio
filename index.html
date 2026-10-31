@@ -279,6 +279,14 @@
             <img src="vedant-suit.png" alt="Vedant Wagh" class="hero-person-img" />
           </div>
 
+          <!-- Auto-Demo Cursor Animation -->
+          <div class="auto-cursor-demo" id="autoCursorDemo" aria-hidden="true">
+            <div class="acd-cursor" id="acdCursor">
+              <div class="acd-cursor-dot"></div>
+            </div>
+            <div class="acd-tooltip" id="acdTooltip"></div>
+          </div>
+
           <!-- Bottom Floating Tech Stack Pills Arc (5 Icons Under Vedant's Feet) -->
           <div class="hero-tech-arc" data-aos="fade-up" data-aos-delay="750">
             <!-- 1. React -->
@@ -1574,14 +1582,15 @@
   <script src="script.js"></script>
   
   <script>
-    // Initialize AOS with smooth spring curve & continuous trigger
+    // Initialize AOS — once:true for performance, smooth easing
     if (window.AOS) {
       AOS.init({
         offset: 60,
-        duration: 850,
-        easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
-        once: false,
-        mirror: false
+        duration: 700,
+        easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
+        once: true,
+        mirror: false,
+        disable: window.matchMedia('(prefers-reduced-motion: reduce)').matches
       });
     }
 

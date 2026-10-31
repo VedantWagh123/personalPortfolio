@@ -5857,3 +5857,258 @@ body {
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
 }
+
+
+/* ============================================================ */
+/* PREMIUM PERFORMANCE & ANIMATION OPTIMIZATION                */
+/* Auto-cursor demo, scroll reveals, smooth interactions       */
+/* ============================================================ */
+
+/* 1. GPU ACCELERATION FOR KEY ELEMENTS */
+.hero-section,
+.about,
+.skills,
+.services,
+.projects,
+.contact,
+footer {
+  will-change: auto;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* 2. SMOOTH SCROLLBAR CUSTOMIZATION */
+::-webkit-scrollbar {
+  width: 6px !important;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9 !important;
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #3b82f6, #2563eb) !important;
+  border-radius: 10px !important;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #1d4ed8 !important;
+}
+
+/* 3. PREMIUM SECTION SCROLL REVEAL */
+.reveal-section {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.75s cubic-bezier(0.22, 1, 0.36, 1), transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.reveal-section.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-section.revealed .reveal-child {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-child {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1), transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.reveal-child:nth-child(1) { transition-delay: 0.05s; }
+.reveal-child:nth-child(2) { transition-delay: 0.12s; }
+.reveal-child:nth-child(3) { transition-delay: 0.19s; }
+.reveal-child:nth-child(4) { transition-delay: 0.26s; }
+.reveal-child:nth-child(5) { transition-delay: 0.33s; }
+.reveal-child:nth-child(6) { transition-delay: 0.40s; }
+
+/* 4. PREMIUM CUSTOM CURSOR (real user cursor) */
+.custom-cursor-outer {
+  position: fixed;
+  pointer-events: none;
+  z-index: 99998;
+  width: 32px;
+  height: 32px;
+  border: 2px solid rgba(59, 130, 246, 0.55);
+  border-radius: 50%;
+  top: -16px;
+  left: -16px;
+  transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s ease, border-color 0.25s ease, width 0.25s ease, height 0.25s ease;
+  will-change: transform;
+}
+.custom-cursor-inner {
+  position: fixed;
+  pointer-events: none;
+  z-index: 99999;
+  width: 7px;
+  height: 7px;
+  background: #3b82f6;
+  border-radius: 50%;
+  top: -3.5px;
+  left: -3.5px;
+  transition: transform 0.08s ease, width 0.2s ease, height 0.2s ease, background 0.2s ease;
+  will-change: transform;
+}
+.custom-cursor-outer.cursor-hover {
+  width: 48px;
+  height: 48px;
+  top: -24px;
+  left: -24px;
+  border-color: rgba(59, 130, 246, 0.85);
+  background: rgba(59, 130, 246, 0.08);
+}
+.custom-cursor-outer.cursor-click {
+  transform: scale(0.75);
+  border-color: rgba(37, 99, 235, 1);
+}
+.custom-cursor-inner.cursor-hover {
+  width: 10px;
+  height: 10px;
+  top: -5px;
+  left: -5px;
+  background: #2563eb;
+}
+
+/* Hide custom cursor on touch devices */
+@media (hover: none) and (pointer: coarse) {
+  .custom-cursor-outer,
+  .custom-cursor-inner { display: none !important; }
+}
+
+/* 5. AUTO DEMO CURSOR (hero section) */
+.auto-cursor-demo {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 30;
+  overflow: hidden;
+}
+
+.acd-cursor {
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  pointer-events: none;
+  z-index: 31;
+  will-change: transform;
+  /* starts hidden, JS controls visibility */
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.acd-cursor-dot {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 26px;
+  height: 26px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26' viewBox='0 0 26 26'%3E%3Cpath d='M2 2 L2 20 L7 15 L10 22 L13 21 L10 14 L17 14 Z' fill='%23ffffff' stroke='%232563eb' stroke-width='1.5' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat center/contain;
+}
+
+.acd-cursor.acd-clicking .acd-cursor-dot {
+  transform: scale(0.85);
+  transition: transform 0.1s ease;
+}
+
+.acd-tooltip {
+  position: absolute;
+  background: rgba(15, 23, 42, 0.88);
+  color: #f8fafc;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  padding: 5px 10px;
+  border-radius: 8px;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 32;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(59, 130, 246, 0.25);
+  max-width: 180px;
+  overflow: hidden;
+}
+
+.acd-tooltip.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* typing cursor blink in tooltip */
+.acd-tooltip .acd-blink {
+  display: inline-block;
+  width: 1px;
+  height: 11px;
+  background: #93c5fd;
+  margin-left: 1px;
+  vertical-align: middle;
+  animation: acdBlink 0.7s step-end infinite;
+}
+
+@keyframes acdBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* 6. HERO ENTRY ANIMATION (after preloader) */
+.hero-section {
+  animation: heroFadeIn 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: 3.1s;
+}
+@keyframes heroFadeIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* 7. BUTTON HOVER UPGRADES */
+.hero-btn-primary,
+.hero-btn-secondary,
+.about-btn-primary,
+.about-btn-secondary,
+.submit-btn {
+  transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.22s ease !important;
+}
+.hero-btn-primary:hover,
+.about-btn-primary:hover {
+  transform: translateY(-2px) scale(1.02) !important;
+}
+.hero-btn-secondary:hover,
+.about-btn-secondary:hover {
+  transform: translateY(-2px) !important;
+}
+
+/* 8. CARD HOVER MICRO-INTERACTIONS */
+.hero-float-card,
+.about-metric-card,
+.master-project-card,
+.service-card {
+  transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.32s ease !important;
+}
+.hero-float-card:hover {
+  transform: translateY(-4px) scale(1.015) !important;
+  box-shadow: 0 18px 48px rgba(59, 130, 246, 0.15) !important;
+}
+
+/* 9. NAV HIDE/SHOW ANIMATION UPGRADE */
+.main-nav {
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), background 0.35s ease, box-shadow 0.35s ease !important;
+}
+.main-nav.nav-hidden {
+  transform: translateY(-100%) !important;
+}
+
+/* 10. PREFERS REDUCED MOTION */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .hero-section { animation: none !important; }
+  .auto-cursor-demo { display: none !important; }
+}

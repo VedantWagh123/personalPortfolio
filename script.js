@@ -413,13 +413,7 @@ function initScrollReveal() {
     aboutSection.classList.add("is-revealed");
   }
 
-  // Allow re-trigger if user scrolls all the way back to top hero
-  window.addEventListener("scroll", () => {
-    if (window.scrollY < 60) {
-      aboutSection.classList.remove("is-revealed");
-      aboutSection.classList.remove("section-visible");
-    }
-  }, { passive: true });
+
 }
 
 // Call initScrollReveal when DOM is ready
@@ -489,93 +483,6 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // Scrollspy with Smooth Hide-on-Scroll & Reappear-on-Stop Navigation (Throttled & Non-blocking)
-function initScrollspy() {
-  const sections = Array.from(document.querySelectorAll("section[id]"));
-  const navItems = Array.from(document.querySelectorAll(".nav-links ul li a"));
-  const header = document.querySelector(".main-nav");
-  const navLinks = document.getElementById("navLinks");
-
-  let sectionBounds = [];
-  function cacheSectionBounds() {
-    sectionBounds = sections.map(sec => ({
-      id: sec.getAttribute("id"),
-      top: sec.offsetTop,
-      bottom: sec.offsetTop + sec.offsetHeight
-    }));
-  }
-  cacheSectionBounds();
-  window.addEventListener("resize", cacheSectionBounds, { passive: true });
-  window.addEventListener("load", cacheSectionBounds, { passive: true });
-
-  let lastScrollY = window.pageYOffset || document.documentElement.scrollTop;
-  let scrollStopTimer = null;
-  const scrollThreshold = 70;
-  let isTicking = false;
-
-  function updateScrollState() {
-    const currentScrollY = window.pageYOffset || document.documentElement.scrollTop;
-    const scrollPos = currentScrollY + 140;
-
-    // Fast bounds check without DOM reflow
-    for (let i = 0; i < sectionBounds.length; i++) {
-      const sec = sectionBounds[i];
-      if (scrollPos >= sec.top && scrollPos < sec.bottom) {
-        navItems.forEach(item => {
-          if (item.getAttribute("href") === `#${sec.id}`) {
-            item.classList.add("active-link");
-          } else {
-            item.classList.remove("active-link");
-          }
-        });
-        break;
-      }
-    }
-
-    // Sticky & Auto-hide Navbar logic
-    if (header) {
-      if (currentScrollY > 40) {
-        header.classList.add("scrolled");
-      } else {
-        header.classList.remove("scrolled");
-      }
-
-      const isMobileMenuOpen = navLinks && navLinks.classList.contains("show");
-      if (!isMobileMenuOpen) {
-        if (scrollStopTimer) {
-          clearTimeout(scrollStopTimer);
-        }
-
-        if (currentScrollY <= scrollThreshold) {
-          header.classList.remove("nav-hidden");
-        } else {
-          if (currentScrollY > lastScrollY && currentScrollY > scrollThreshold) {
-            header.classList.add("nav-hidden");
-          } else if (currentScrollY < lastScrollY) {
-            header.classList.remove("nav-hidden");
-          }
-        }
-
-        scrollStopTimer = setTimeout(() => {
-          header.classList.remove("nav-hidden");
-        }, 400);
-      }
-    }
-
-    lastScrollY = Math.max(0, currentScrollY);
-    isTicking = false;
-  }
-
-  function onScroll() {
-    if (!isTicking) {
-      requestAnimationFrame(updateScrollState);
-      isTicking = true;
-    }
-  }
-
-  window.addEventListener("scroll", onScroll, { passive: true });
-  updateScrollState();
-}
-
 // ============================================================
 // 5. SOCIAL MEDIA POPUP MODAL
 // ============================================================
@@ -1104,3 +1011,316 @@ document.addEventListener("DOMContentLoaded", () => {
   const yearEl = document.getElementById("currentYear");
   if (yearEl) yearEl.textContent = new Date().getFullYear();
 });
+
+
+// ============================================================
+// 15. PREMIUM CUSTOM CURSOR (desktop only)
+// ============================================================
+(function initCustomCursor() {
+  // Only on non-touch devices
+  if (window.matchMedia("(hover: none) and (pointer: coarse)").matches) return;
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+  const outer = document.createElement("div");
+  outer.className = "custom-cursor-outer";
+  const inner = document.createElement("div");
+  inner.className = "custom-cursor-inner";
+  document.body.appendChild(outer);
+  document.body.appendChild(inner);
+
+  let mouseX = -100, mouseY = -100;
+  let outerX = -100, outerY = -100;
+  let rafId = null;
+
+  document.addEventListener("mousemove", (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    // Inner follows immediately
+    inner.style.transform = `translate(${mouseX}px, ${mouseY}px)`;
+    if (!rafId) rafId = requestAnimationFrame(animateCursor);
+  }, { passive: true });
+
+  function animateCursor() {
+    const dx = mouseX - outerX;
+    const dy = mouseY - outerY;
+    outerX += dx * 0.14;
+    outerY += dy * 0.14;
+    outer.style.transform = `translate(${outerX}px, ${outerY}px)`;
+    if (Math.abs(dx) > 0.3 || Math.abs(dy) > 0.3) {
+      rafId = requestAnimationFrame(animateCursor);
+    } else {
+      rafId = null;
+    }
+  }
+
+  // Hover effects
+  const hoverTargets = "a, button, .hero-float-card, .about-metric-card, .master-project-card, .service-card, .about-tab-btn, .tech-orb, .social-circle, .social-pill";
+  document.addEventListener("mouseover", (e) => {
+    if (e.target.closest(hoverTargets)) {
+      outer.classList.add("cursor-hover");
+      inner.classList.add("cursor-hover");
+    }
+  }, { passive: true });
+
+  document.addEventListener("mouseout", (e) => {
+    if (e.target.closest(hoverTargets)) {
+      outer.classList.remove("cursor-hover");
+      inner.classList.remove("cursor-hover");
+    }
+  }, { passive: true });
+
+  document.addEventListener("mousedown", () => {
+    outer.classList.add("cursor-click");
+  }, { passive: true });
+
+  document.addEventListener("mouseup", () => {
+    outer.classList.remove("cursor-click");
+  }, { passive: true });
+
+  // Hide default cursor site-wide
+  document.documentElement.style.cursor = "none";
+  document.addEventListener("mouseleave", () => { outer.style.opacity = "0"; inner.style.opacity = "0"; });
+  document.addEventListener("mouseenter", () => { outer.style.opacity = "1"; inner.style.opacity = "1"; });
+})();
+
+// ============================================================
+// 16. PREMIUM SCROLL REVEAL (IntersectionObserver for all sections)
+// ============================================================
+(function initPremiumScrollReveal() {
+  if (!("IntersectionObserver" in window)) return;
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    document.querySelectorAll(".reveal-section").forEach(el => {
+      el.classList.add("revealed");
+    });
+    return;
+  }
+
+  const sections = document.querySelectorAll(
+    "section, .about-metric-card, .about-tabs-card-exact, .master-project-card, .service-card, .contact-form-card, footer"
+  );
+
+  sections.forEach(el => {
+    el.classList.add("reveal-section");
+    // Also add staggered children for cards inside sections
+    const staggerable = el.querySelectorAll(
+      ".hero-float-card, .about-metric-card, .master-project-card, .service-card, .skill-category-card, .timeline-item, .about-timeline-item"
+    );
+    staggerable.forEach(child => child.classList.add("reveal-child"));
+  });
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("revealed");
+        observer.unobserve(entry.target); // Fire once for performance
+      }
+    });
+  }, {
+    root: null,
+    rootMargin: "0px 0px -60px 0px",
+    threshold: 0.08
+  });
+
+  sections.forEach(el => observer.observe(el));
+})();
+
+// ============================================================
+// 18. AUTO-DEMO CURSOR ANIMATION ON HERO SECTION
+// ============================================================
+(function initAutoCursorDemo() {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+  const cursorEl = document.getElementById("acdCursor");
+  const tooltipEl = document.getElementById("acdTooltip");
+  const demoWrap = document.getElementById("autoCursorDemo");
+  if (!cursorEl || !tooltipEl || !demoWrap) return;
+
+  // Animation sequence — cursor moves between hero elements and simulates interaction
+  const steps = [
+    // Step: Move to code card area and "click"
+    { x: 22, y: 38, duration: 1200, action: null, tooltip: "" },
+    { x: 22, y: 38, duration: 400, action: "click", tooltip: "const developer = {" },
+    { x: 22, y: 38, duration: 800, action: "type", typeText: "// Building amazing things...", tooltip: "// Building amazing things..." },
+    // Move to rocket card (top right)
+    { x: 72, y: 18, duration: 1000, action: null, tooltip: "" },
+    { x: 72, y: 18, duration: 350, action: "click", tooltip: "Real-World Products ✓" },
+    // Move to tech icon area (bottom)
+    { x: 45, y: 82, duration: 900, action: null, tooltip: "" },
+    { x: 45, y: 82, duration: 300, action: "click", tooltip: "React • Node • Python" },
+    // Move to creative problem solver card
+    { x: 18, y: 62, duration: 900, action: null, tooltip: "" },
+    { x: 18, y: 62, duration: 350, action: "click", tooltip: "From Ideas to Solutions ✓" },
+    // Move to person image center
+    { x: 50, y: 45, duration: 1100, action: null, tooltip: "" },
+    // Disappear
+    { x: 50, y: 45, duration: 800, action: "leave", tooltip: "" },
+  ];
+
+  let stepIndex = 0;
+  let currentX = 50;
+  let currentY = 50;
+  let rafId = null;
+  let loopTimer = null;
+  let isVisible = false;
+  let isRunning = false;
+
+  function setPos(x, y) {
+    // x,y are percentages relative to hero-right section
+    cursorEl.style.left = x + "%";
+    cursorEl.style.top = y + "%";
+    tooltipEl.style.left = (x + 3) + "%";
+    tooltipEl.style.top = (y - 10) + "%";
+  }
+
+  function showCursor() {
+    cursorEl.style.opacity = "1";
+    isVisible = true;
+  }
+
+  function hideCursor() {
+    cursorEl.style.opacity = "0";
+    tooltipEl.classList.remove("visible");
+    isVisible = false;
+  }
+
+  function showTooltip(text) {
+    if (!text) {
+      tooltipEl.classList.remove("visible");
+      tooltipEl.textContent = "";
+      return;
+    }
+    tooltipEl.textContent = text;
+    tooltipEl.classList.add("visible");
+  }
+
+  function typeTooltip(text, cb) {
+    let i = 0;
+    tooltipEl.innerHTML = '<span class="acd-blink"></span>';
+    tooltipEl.classList.add("visible");
+
+    function addChar() {
+      if (i < text.length) {
+        tooltipEl.innerHTML = text.substring(0, i + 1) + '<span class="acd-blink"></span>';
+        i++;
+        setTimeout(addChar, 45 + Math.random() * 30);
+      } else {
+        setTimeout(() => {
+          tooltipEl.classList.remove("visible");
+          if (cb) cb();
+        }, 800);
+      }
+    }
+    addChar();
+  }
+
+  // Smooth move animation using lerp
+  function moveTo(targetX, targetY, duration, onDone) {
+    const startX = currentX;
+    const startY = currentY;
+    const startTime = performance.now();
+
+    function frame(now) {
+      const elapsed = now - startTime;
+      const t = Math.min(elapsed / duration, 1);
+      // Ease in-out cubic
+      const ease = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+      currentX = startX + (targetX - startX) * ease;
+      currentY = startY + (targetY - startY) * ease;
+      setPos(currentX, currentY);
+
+      if (t < 1) {
+        rafId = requestAnimationFrame(frame);
+      } else {
+        currentX = targetX;
+        currentY = targetY;
+        if (onDone) onDone();
+      }
+    }
+    rafId = requestAnimationFrame(frame);
+  }
+
+  function runStep() {
+    if (!isRunning) return;
+    const step = steps[stepIndex];
+    stepIndex = (stepIndex + 1) % steps.length;
+
+    if (step.action === "leave") {
+      hideCursor();
+      // Wait before restarting
+      loopTimer = setTimeout(() => {
+        stepIndex = 0;
+        currentX = 50; currentY = 80;
+        setPos(currentX, currentY);
+        showCursor();
+        showTooltip(""); 
+        loopTimer = setTimeout(runStep, 600);
+      }, 2200);
+      return;
+    }
+
+    moveTo(step.x, step.y, step.duration, () => {
+      if (step.action === "click") {
+        cursorEl.classList.add("acd-clicking");
+        showTooltip(step.tooltip);
+        setTimeout(() => {
+          cursorEl.classList.remove("acd-clicking");
+          loopTimer = setTimeout(runStep, 500);
+        }, 200);
+      } else if (step.action === "type") {
+        cursorEl.classList.add("acd-clicking");
+        setTimeout(() => { cursorEl.classList.remove("acd-clicking"); }, 150);
+        typeTooltip(step.typeText, () => {
+          loopTimer = setTimeout(runStep, 200);
+        });
+      } else {
+        showTooltip(step.tooltip);
+        loopTimer = setTimeout(runStep, 100);
+      }
+    });
+  }
+
+  // Start the demo after preloader (after 3.5s) and only when hero is in view
+  function startDemo() {
+    if (isRunning) return;
+    isRunning = true;
+    showCursor();
+    setPos(50, 80);
+    loopTimer = setTimeout(runStep, 400);
+  }
+
+  function stopDemo() {
+    isRunning = false;
+    if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+    if (loopTimer) { clearTimeout(loopTimer); loopTimer = null; }
+    hideCursor();
+    stepIndex = 0;
+  }
+
+  // Use IntersectionObserver to start/stop
+  if ("IntersectionObserver" in window) {
+    const heroSection = document.getElementById("home");
+    if (heroSection) {
+      const obs = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting && !isRunning) {
+            setTimeout(startDemo, 3600); // after preloader
+          } else if (!entry.isIntersecting) {
+            stopDemo();
+          }
+        });
+      }, { threshold: 0.4 });
+      obs.observe(heroSection);
+    }
+  } else {
+    setTimeout(startDemo, 3600);
+  }
+
+  // Pause demo when user moves real mouse over hero
+  const heroRight = document.querySelector(".hero-right");
+  if (heroRight) {
+    heroRight.addEventListener("mouseenter", stopDemo, { passive: true });
+    heroRight.addEventListener("mouseleave", () => {
+      setTimeout(startDemo, 1500);
+    }, { passive: true });
+  }
+})();
