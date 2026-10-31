@@ -1333,7 +1333,7 @@ if (document.readyState === "loading") {
 
 
 // ============================================================
-// DYNAMIC SIDE-PREVIEW WINDOW (MOUSE FOLLOW, 3S LIGHT-GREEN BUTTON, PIN)
+// DYNAMIC SIDE-PREVIEW WINDOW (IMG-ONLY TRIGGER, 60FPS LERP PHYSICS, 3S LIGHT-GREEN BUTTON)
 // ============================================================
 function initDraggableProjectPreview() {
   const modal = document.getElementById("floatingProjectPreview");
@@ -1357,66 +1357,96 @@ function initDraggableProjectPreview() {
   let currentCard = null;
   let isModalHovered = false;
   let isDragging = false;
-  let cardRect = null;
-  let baseSideX = 0;
-  let sideChosen = "right";
 
-  function computeSidePosition(card, clientX, clientY) {
+  // LERP & RAF Smooth Physics State
+  let targetX = 0, targetY = 0;
+  let currentX = 0, currentY = 0;
+  let targetTiltX = 0, targetTiltY = 0;
+  let currentTiltX = 0, currentTiltY = 0;
+  let isRafActive = false;
+  let rafId = null;
+
+  function lerp(start, end, factor) {
+    return start + (end - start) * factor;
+  }
+
+  function updateRafLoop() {
+    if (!isRafActive) return;
+
+    // 0.12 factor gives a velvety, buttery-smooth gliding response without jitter or lag
+    const factor = 0.12;
+    currentX = lerp(currentX, targetX, factor);
+    currentY = lerp(currentY, targetY, factor);
+    currentTiltX = lerp(currentTiltX, targetTiltX, factor);
+    currentTiltY = lerp(currentTiltY, targetTiltY, factor);
+
+    modal.style.left = currentX.toFixed(2) + "px";
+    modal.style.top = currentY.toFixed(2) + "px";
+    modal.style.transform = `perspective(1000px) rotateX(${currentTiltX.toFixed(2)}deg) rotateY(${currentTiltY.toFixed(2)}deg) scale(1.01)`;
+
+    rafId = requestAnimationFrame(updateRafLoop);
+  }
+
+  function startRaf() {
+    if (!isRafActive) {
+      isRafActive = true;
+      rafId = requestAnimationFrame(updateRafLoop);
+    }
+  }
+
+  function stopRaf() {
+    isRafActive = false;
+    if (rafId) {
+      cancelAnimationFrame(rafId);
+      rafId = null;
+    }
+  }
+
+  function computeTargetPosition(card, imgTarget, clientX, clientY) {
     if (isPinned || isDragging || isModalHovered) return;
     if (!card) return;
 
-    cardRect = card.getBoundingClientRect();
+    const cardRect = card.getBoundingClientRect();
     const modalW = modal.offsetWidth || 530;
     const modalH = modal.offsetHeight || 330;
 
     const roomRight = window.innerWidth - cardRect.right;
     const roomLeft = cardRect.left;
 
-    // Place to the side of the card (not on top of the card!)
+    let baseSideX = 0;
+    // Always open to the SIDE of the card
     if (roomRight >= modalW + 24) {
-      sideChosen = "right";
       baseSideX = cardRect.right + 20;
     } else if (roomLeft >= modalW + 24) {
-      sideChosen = "left";
       baseSideX = cardRect.left - modalW - 20;
     } else {
-      // Best fit
-      if (roomRight >= roomLeft) {
-        sideChosen = "right";
-        baseSideX = Math.max(12, window.innerWidth - modalW - 15);
-      } else {
-        sideChosen = "left";
-        baseSideX = 15;
-      }
+      baseSideX = (roomRight >= roomLeft) ? Math.max(12, window.innerWidth - modalW - 15) : 15;
     }
 
-    // Relative mouse position within card (-0.5 to +0.5)
+    // Relative mouse position within the card's image target (-0.5 to +0.5)
+    const targetRect = (imgTarget || card).getBoundingClientRect();
     let normX = 0;
     let normY = 0;
     if (clientX !== undefined && clientY !== undefined) {
-      normX = Math.min(1, Math.max(0, (clientX - cardRect.left) / cardRect.width)) - 0.5;
-      normY = Math.min(1, Math.max(0, (clientY - cardRect.top) / cardRect.height)) - 0.5;
+      normX = Math.min(1, Math.max(0, (clientX - targetRect.left) / targetRect.width)) - 0.5;
+      normY = Math.min(1, Math.max(0, (clientY - targetRect.top) / targetRect.height)) - 0.5;
     }
 
-    // Dynamic movement: preview screen moves as mouse moves!
-    let finalX = baseSideX + (normX * 45);
-    const pointerY = (clientY !== undefined) ? clientY : (cardRect.top + cardRect.height / 2);
-    let finalY = (pointerY - modalH * 0.45) + (normY * 30);
+    // Dynamic glide target coordinates
+    targetX = baseSideX + (normX * 36);
+    const pointerY = (clientY !== undefined) ? clientY : (targetRect.top + targetRect.height / 2);
+    targetY = (pointerY - modalH * 0.45) + (normY * 26);
 
-    // Bounds clamping
-    finalX = Math.max(12, Math.min(window.innerWidth - modalW - 12, finalX));
-    finalY = Math.max(15, Math.min(window.innerHeight - modalH - 15, finalY));
+    // Clamping within viewport
+    targetX = Math.max(12, Math.min(window.innerWidth - modalW - 12, targetX));
+    targetY = Math.max(15, Math.min(window.innerHeight - modalH - 15, targetY));
 
-    modal.style.left = finalX + "px";
-    modal.style.top = finalY + "px";
-
-    // 3D perspective tilt reacting to mouse position!
-    const tiltX = (-normY * 12).toFixed(1);
-    const tiltY = (normX * 12).toFixed(1);
-    modal.style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale(1.01)`;
+    // Dynamic 3D tilt target
+    targetTiltX = (-normY * 9);
+    targetTiltY = (normX * 9);
   }
 
-  function openPreview(card, data, e) {
+  function openPreview(card, imgTarget, data, e) {
     currentCard = card;
     if (modalTitle) modalTitle.textContent = data.title || "Project Preview";
     if (modalImg) modalImg.src = data.img || "";
@@ -1449,18 +1479,40 @@ function initDraggableProjectPreview() {
       }, 3000);
     }
 
+    computeTargetPosition(card, imgTarget, e.clientX, e.clientY);
+
+    // Direct initial placement so entrance has no jump
+    currentX = targetX;
+    currentY = targetY;
+    currentTiltX = targetTiltX;
+    currentTiltY = targetTiltY;
+
+    modal.style.left = currentX.toFixed(2) + "px";
+    modal.style.top = currentY.toFixed(2) + "px";
+    modal.style.transform = `perspective(1000px) rotateX(${currentTiltX.toFixed(2)}deg) rotateY(${currentTiltY.toFixed(2)}deg) scale(1.01)`;
     modal.style.display = "block";
     modal.classList.remove("is-dragging");
 
+    requestAnimationFrame(() => {
+      modal.style.opacity = "1";
+    });
+
     if (!isPinned) {
       if (pinBadge) pinBadge.style.display = "none";
-      computeSidePosition(card, e.clientX, e.clientY);
+      startRaf();
     }
   }
 
   function closePreview() {
-    modal.style.display = "none";
-    modal.style.transform = "none";
+    modal.style.opacity = "0";
+    setTimeout(() => {
+      if (modal.style.opacity === "0") {
+        modal.style.display = "none";
+        modal.style.transform = "none";
+      }
+    }, 220);
+
+    stopRaf();
     isPinned = false;
     currentCard = null;
     isModalHovered = false;
@@ -1473,6 +1525,7 @@ function initDraggableProjectPreview() {
   function setPinned(pinned) {
     isPinned = pinned;
     if (isPinned) {
+      stopRaf();
       if (pinBadge) pinBadge.style.display = "inline-flex";
       modal.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)";
       if (hoverLeaveTimeout) clearTimeout(hoverLeaveTimeout);
@@ -1487,7 +1540,7 @@ function initDraggableProjectPreview() {
     closePreview();
   });
 
-  // Double click to pin
+  // Double click on preview stage to pin
   function handleDoubleClick(e) {
     e.stopPropagation();
     setPinned(true);
@@ -1497,20 +1550,24 @@ function initDraggableProjectPreview() {
 
   // Outside click to dismiss
   document.addEventListener("pointerdown", (e) => {
-    if (modal.style.display !== "none") {
+    if (modal.style.display !== "none" && modal.style.opacity !== "0") {
       const isInsideModal = modal.contains(e.target);
-      const isInsideCard = e.target.closest(".featured-project-card, .compact-project-card");
-      if (!isInsideModal && !isInsideCard) {
+      const isInsideImg = e.target.closest(".card-preview-area, .compact-thumb-wrap");
+      if (!isInsideModal && !isInsideImg) {
         closePreview();
       }
     }
   });
 
-  // Card triggers
+  // ATTACH TRIGGERS STRICTLY TO THE CARD IMAGE PORTION
+  // (User requirement: Preview tabhi dikhna chahiye jab user card ke IMG pe hover karega. Content portion pe hover karne par preview nahi aana chahiye)
   const allCards = document.querySelectorAll(".featured-project-card, .compact-project-card");
   allCards.forEach(card => {
-    // Hover Enter: Opens to side
-    card.addEventListener("mouseenter", (e) => {
+    const imgTarget = card.querySelector(".card-preview-area") || card.querySelector(".compact-thumb-wrap");
+    if (!imgTarget) return;
+
+    // Hover Enter on IMAGE ONLY
+    imgTarget.addEventListener("mouseenter", (e) => {
       if (hoverLeaveTimeout) clearTimeout(hoverLeaveTimeout);
       if (isPinned && modal.style.display !== "none") return;
 
@@ -1523,39 +1580,38 @@ function initDraggableProjectPreview() {
         desc: card.getAttribute("data-desc") || card.querySelector(".card-desc, .compact-desc")?.textContent || ""
       };
 
-      openPreview(card, data, e);
+      openPreview(card, imgTarget, data, e);
     });
 
-    // Mouse Move on Card: Preview moves along with mouse dynamically!
-    card.addEventListener("mousemove", (e) => {
+    // Mouse Move on IMAGE ONLY: updates targets smoothly
+    imgTarget.addEventListener("mousemove", (e) => {
       if (isPinned || isDragging || isModalHovered) return;
       if (modal.style.display === "none") return;
-      computeSidePosition(card, e.clientX, e.clientY);
+      computeTargetPosition(card, imgTarget, e.clientX, e.clientY);
     });
 
-    // Hover Leave
-    card.addEventListener("mouseleave", () => {
+    // Hover Leave IMAGE: Closes preview if user moves into content portion or elsewhere
+    imgTarget.addEventListener("mouseleave", () => {
       if (!isPinned && modal.style.display !== "none" && !isModalHovered) {
         hoverLeaveTimeout = setTimeout(() => {
           if (!isModalHovered) closePreview();
-        }, 320);
+        }, 280);
       }
     });
 
-    // Direct double-click on card triggers pin
-    card.addEventListener("dblclick", (e) => {
+    // Double-click on IMAGE pins preview
+    imgTarget.addEventListener("dblclick", (e) => {
       e.stopPropagation();
       setPinned(true);
     });
   });
 
-  // When mouse enters modal: keep open and steady for easy interaction
+  // When mouse enters modal: keep open and smoothly level out
   modal.addEventListener("mouseenter", () => {
     isModalHovered = true;
     if (hoverLeaveTimeout) clearTimeout(hoverLeaveTimeout);
-    if (!isPinned) {
-      modal.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1.02)";
-    }
+    targetTiltX = 0;
+    targetTiltY = 0;
   });
 
   // When mouse leaves modal
@@ -1564,7 +1620,7 @@ function initDraggableProjectPreview() {
     if (!isPinned && modal.style.display !== "none") {
       hoverLeaveTimeout = setTimeout(() => {
         closePreview();
-      }, 320);
+      }, 280);
     }
   });
 
@@ -1579,6 +1635,7 @@ function initDraggableProjectPreview() {
       return;
     }
     isDragging = true;
+    stopRaf();
     modal.classList.add("is-dragging");
     const clientX = e.clientX || (e.touches && e.touches[0].clientX) || 0;
     const clientY = e.clientY || (e.touches && e.touches[0].clientY) || 0;
@@ -1606,6 +1663,10 @@ function initDraggableProjectPreview() {
     newLeft = Math.max(10, Math.min(newLeft, window.innerWidth - modalW - 10));
     newTop = Math.max(10, Math.min(newTop, window.innerHeight - modalH - 10));
 
+    currentX = newLeft;
+    currentY = newTop;
+    targetX = newLeft;
+    targetY = newTop;
     modal.style.left = newLeft + "px";
     modal.style.top = newTop + "px";
   }

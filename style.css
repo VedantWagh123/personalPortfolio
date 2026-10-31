@@ -7165,19 +7165,9 @@ footer,
   pointer-events: auto;
   user-select: none;
   transform-origin: center center;
-  transition: transform 0.12s cubic-bezier(0.2, 0, 0.2, 1), left 0.14s cubic-bezier(0.2, 0, 0.2, 1), top 0.14s cubic-bezier(0.2, 0, 0.2, 1), opacity 0.2s ease;
-  animation: sideModalPop 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-@keyframes sideModalPop {
-  0% {
-    opacity: 0;
-    transform: scale(0.92) translateY(12px);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
+  opacity: 0;
+  transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: left, top, transform;
 }
 
 .floating-side-preview.is-dragging {
