@@ -1891,27 +1891,36 @@
     }
   </script>
 
-  <!-- Floating Draggable Interactive Project Preview Window -->
-  <div id="floatingProjectPreview" class="floating-preview-modal" style="display: none;">
+  <!-- Floating Draggable Interactive Project Preview Window (Borderless & Clean UI) -->
+  <div id="floatingProjectPreview" class="floating-preview-modal borderless-clean" style="display: none;">
+    <!-- Corner Cross Close Button -->
+    <button class="corner-cross-btn" id="floatingCornerClose" title="Close Preview">
+      <i class="fas fa-times"></i>
+    </button>
+
+    <!-- Pinned Indicator Badge -->
+    <div class="preview-pinned-indicator" id="previewPinnedIndicator" style="display: none;">
+      <i class="fas fa-thumbtack"></i> Pinned (Double-Clicked)
+    </div>
+
+    <!-- Drag Header -->
     <div class="floating-preview-header" id="floatingPreviewHeader">
       <div class="floating-drag-dots">
         <span class="mac-dot red" id="macCloseDot" title="Close"></span>
-        <span class="mac-dot yellow" title="Drag Window"></span>
-        <span class="mac-dot green" title="Flexible Window"></span>
-        <span class="drag-hint-pill"><i class="fas fa-hand-rock"></i> Drag anywhere</span>
+        <span class="mac-dot yellow" title="Drag"></span>
+        <span class="mac-dot green" title="Flexible"></span>
+        <span class="drag-hint-pill"><i class="fas fa-arrows-alt"></i> Drag anywhere &bull; Double-click to pin</span>
       </div>
       <div class="floating-preview-title" id="floatingModalTitle">Project Preview</div>
-      <button class="floating-close-btn" id="floatingCloseBtn" aria-label="Close Preview">
-        <i class="fas fa-times"></i>
-      </button>
     </div>
+
     <div class="floating-preview-body">
-      <div class="floating-image-stage">
+      <div class="floating-image-stage" id="floatingImageStage" title="Double click to pin / Drag to move">
         <img id="floatingModalImg" src="" alt="Project Live Preview" />
         
         <!-- 3-Second Live Countdown Pill -->
         <div class="preview-countdown-pill" id="previewCountdownPill">
-          <i class="fas fa-circle-notch fa-spin"></i> Live preview ready in <span id="previewSecondsCount">3</span>s...
+          <i class="fas fa-circle-notch fa-spin"></i> Live preview in <span id="previewSecondsCount">3</span>s...
         </div>
 
         <!-- Light Green Live Preview Button (Appears automatically after 3 seconds) -->

@@ -1333,12 +1333,13 @@ if (document.readyState === "loading") {
 
 
 // ============================================================
-// INTERACTIVE DRAGGABLE PROJECT PREVIEW & 3S LIVE BUTTON
+// DIRECT HOVER PREVIEW, DOUBLE-CLICK PIN & 3S LIGHT-GREEN BUTTON
 // ============================================================
 function initDraggableProjectPreview() {
   const modal = document.getElementById("floatingProjectPreview");
   const header = document.getElementById("floatingPreviewHeader");
-  const closeBtn = document.getElementById("floatingCloseBtn");
+  const stage = document.getElementById("floatingImageStage");
+  const cornerClose = document.getElementById("floatingCornerClose");
   const macClose = document.getElementById("macCloseDot");
   const modalTitle = document.getElementById("floatingModalTitle");
   const modalImg = document.getElementById("floatingModalImg");
@@ -1348,13 +1349,19 @@ function initDraggableProjectPreview() {
   const ghBtn = document.getElementById("floatingGithubBtn");
   const timerPill = document.getElementById("previewCountdownPill");
   const timerSec = document.getElementById("previewSecondsCount");
+  const pinBadge = document.getElementById("previewPinnedIndicator");
 
-  if (!modal || !header) return;
+  if (!modal) return;
 
   let countdownInterval = null;
   let countdownTimeout = null;
+  let hoverLeaveTimeout = null;
+  let hoverIntentTimeout = null;
+  let isPinned = false;
+  let currentActiveCard = null;
 
-  function openPreview(data) {
+  function openPreview(card, data, e) {
+    currentActiveCard = card;
     modalTitle.textContent = data.title || "Project Preview";
     modalImg.src = data.img || "";
     modalTag.textContent = data.tag || "Full Stack";
@@ -1385,64 +1392,128 @@ function initDraggableProjectPreview() {
       liveBtn.style.display = "inline-flex";
     }, 3000);
 
-    // Position centered in viewport
+    // Position centered or near cursor
     modal.style.display = "block";
-    const modalW = modal.offsetWidth || 760;
-    const modalH = modal.offsetHeight || 520;
-    const startX = Math.max(15, (window.innerWidth - modalW) / 2);
-    const startY = Math.max(25, (window.innerHeight - modalH) / 2);
-    modal.style.left = startX + "px";
-    modal.style.top = startY + "px";
-    modal.style.transform = "none";
+    if (!isPinned) {
+      pinBadge.style.display = "none";
+      const modalW = modal.offsetWidth || 760;
+      const modalH = modal.offsetHeight || 500;
+      const startX = Math.max(15, (window.innerWidth - modalW) / 2);
+      const startY = Math.max(25, (window.innerHeight - modalH) / 2);
+      modal.style.left = startX + "px";
+      modal.style.top = startY + "px";
+      modal.style.transform = "none";
+    }
   }
 
   function closePreview() {
     modal.style.display = "none";
+    isPinned = false;
+    currentActiveCard = null;
+    pinBadge.style.display = "none";
     if (countdownInterval) clearInterval(countdownInterval);
     if (countdownTimeout) clearTimeout(countdownTimeout);
+    if (hoverLeaveTimeout) clearTimeout(hoverLeaveTimeout);
+    if (hoverIntentTimeout) clearTimeout(hoverIntentTimeout);
   }
 
-  if (closeBtn) closeBtn.addEventListener("click", closePreview);
-  if (macClose) macClose.addEventListener("click", closePreview);
-
-  // Attach click listeners to cards
-  const allCards = document.querySelectorAll(".featured-project-card, .compact-project-card");
-  allCards.forEach(card => {
-    const previewArea = card.querySelector(".card-preview-area") || card.querySelector(".compact-thumb-wrap");
-    if (previewArea) {
-      previewArea.addEventListener("click", (e) => {
-        e.stopPropagation();
-        const data = {
-          title: card.getAttribute("data-title") || card.querySelector("h3, h4")?.textContent || "Project Preview",
-          img: card.getAttribute("data-img") || card.querySelector("img")?.src || "",
-          live: card.getAttribute("data-live") || card.querySelector(".btn-action.secondary")?.href || "#",
-          github: card.getAttribute("data-github") || card.querySelector("a[href*='github']")?.href || "#",
-          tag: card.getAttribute("data-tag") || card.querySelector(".category-pill-tag")?.textContent || "Project",
-          desc: card.getAttribute("data-desc") || card.querySelector(".card-desc, .compact-desc")?.textContent || ""
-        };
-        openPreview(data);
-      });
+  function setPinned(pinned) {
+    isPinned = pinned;
+    if (isPinned) {
+      pinBadge.style.display = "inline-flex";
+      if (hoverLeaveTimeout) clearTimeout(hoverLeaveTimeout);
+    } else {
+      pinBadge.style.display = "none";
     }
+  }
 
-    const viewProjBtn = card.querySelector(".btn-action.primary");
-    if (viewProjBtn) {
-      viewProjBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        const data = {
-          title: card.getAttribute("data-title") || card.querySelector("h3, h4")?.textContent || "Project Preview",
-          img: card.getAttribute("data-img") || card.querySelector("img")?.src || "",
-          live: card.getAttribute("data-live") || "#",
-          github: card.getAttribute("data-github") || "#",
-          tag: card.getAttribute("data-tag") || "Project",
-          desc: card.getAttribute("data-desc") || ""
-        };
-        openPreview(data);
-      });
+  // Corner cross close button
+  if (cornerClose) cornerClose.addEventListener("click", (e) => {
+    e.stopPropagation();
+    closePreview();
+  });
+  if (macClose) macClose.addEventListener("click", (e) => {
+    e.stopPropagation();
+    closePreview();
+  });
+
+  // Double click to pin (User requested: agar user 2 bar o img pe click krta hai toh o image waha rehni chaiye hatni nahi chiaye)
+  function handleDoubleClick(e) {
+    e.stopPropagation();
+    setPinned(true);
+  }
+
+  if (stage) stage.addEventListener("dblclick", handleDoubleClick);
+  if (modalImg) modalImg.addEventListener("dblclick", handleDoubleClick);
+
+  // Click outside to dismiss (User requested: also user side mai kahi touch krta hai toh preview hatt jana chaiye ok)
+  document.addEventListener("pointerdown", (e) => {
+    if (modal.style.display !== "none") {
+      const isInsideModal = modal.contains(e.target);
+      const isInsideCard = e.target.closest(".featured-project-card, .compact-project-card");
+      if (!isInsideModal && !isInsideCard) {
+        closePreview();
+      }
     }
   });
 
-  // DRAGGING SYSTEM (Desktop + Touch Mobile)
+  // Attach Hover triggers to all project cards
+  const allCards = document.querySelectorAll(".featured-project-card, .compact-project-card");
+  allCards.forEach(card => {
+    const triggerTarget = card.querySelector(".card-preview-area") || card.querySelector(".compact-thumb-wrap") || card;
+
+    // Hover Enter: Direct preview
+    triggerTarget.addEventListener("mouseenter", (e) => {
+      if (hoverLeaveTimeout) clearTimeout(hoverLeaveTimeout);
+      if (isPinned && modal.style.display !== "none") return; // Keep pinned preview intact
+
+      const data = {
+        title: card.getAttribute("data-title") || card.querySelector("h3, h4")?.textContent || "Project Preview",
+        img: card.getAttribute("data-img") || card.querySelector("img")?.src || "",
+        live: card.getAttribute("data-live") || card.querySelector(".btn-action.secondary")?.href || "#",
+        github: card.getAttribute("data-github") || card.querySelector("a[href*='github']")?.href || "#",
+        tag: card.getAttribute("data-tag") || card.querySelector(".category-pill-tag")?.textContent || "Project",
+        desc: card.getAttribute("data-desc") || card.querySelector(".card-desc, .compact-desc")?.textContent || ""
+      };
+
+      if (hoverIntentTimeout) clearTimeout(hoverIntentTimeout);
+      hoverIntentTimeout = setTimeout(() => {
+        openPreview(card, data, e);
+      }, 120); // Quick, natural hover responsiveness
+    });
+
+    // Hover Leave: Grace period before closing (unless pinned)
+    triggerTarget.addEventListener("mouseleave", () => {
+      if (hoverIntentTimeout) clearTimeout(hoverIntentTimeout);
+      if (!isPinned && modal.style.display !== "none") {
+        hoverLeaveTimeout = setTimeout(() => {
+          closePreview();
+        }, 350); // 350ms grace period so user can move mouse onto preview modal
+      }
+    });
+
+    // Double click on card preview directly also pins it
+    triggerTarget.addEventListener("dblclick", (e) => {
+      e.stopPropagation();
+      setPinned(true);
+    });
+  });
+
+  // Mouse entering modal keeps it open
+  modal.addEventListener("mouseenter", () => {
+    if (hoverLeaveTimeout) clearTimeout(hoverLeaveTimeout);
+  });
+
+  // Mouse leaving modal closes it (if not pinned)
+  modal.addEventListener("mouseleave", () => {
+    if (!isPinned && modal.style.display !== "none") {
+      hoverLeaveTimeout = setTimeout(() => {
+        closePreview();
+      }, 350);
+    }
+  });
+
+  // DRAGGING SYSTEM (Desktop + Touch Mobile, Fluid 60fps)
   let isDragging = false;
   let startMouseX = 0;
   let startMouseY = 0;
@@ -1450,7 +1521,9 @@ function initDraggableProjectPreview() {
   let initialModalTop = 0;
 
   function onPointerDown(e) {
-    if (e.target.closest(".floating-close-btn") || e.target.closest(".mac-dot.red")) return;
+    if (e.target.closest(".corner-cross-btn") || e.target.closest(".mac-dot.red") || e.target.closest(".floating-live-btn-green") || e.target.closest(".btn-floating-gh")) {
+      return;
+    }
     isDragging = true;
     const clientX = e.clientX || (e.touches && e.touches[0].clientX) || 0;
     const clientY = e.clientY || (e.touches && e.touches[0].clientY) || 0;
@@ -1460,6 +1533,7 @@ function initDraggableProjectPreview() {
     initialModalLeft = rect.left;
     initialModalTop = rect.top;
     header.style.cursor = "grabbing";
+    if (stage) stage.style.cursor = "grabbing";
     e.preventDefault();
   }
 
@@ -1473,7 +1547,7 @@ function initDraggableProjectPreview() {
     let newLeft = initialModalLeft + deltaX;
     let newTop = initialModalTop + deltaY;
 
-    // Bounds clamping
+    // Bounds clamping so modal stays on screen
     const modalW = modal.offsetWidth;
     const modalH = modal.offsetHeight;
     const maxLeft = window.innerWidth - modalW - 10;
@@ -1490,13 +1564,16 @@ function initDraggableProjectPreview() {
     if (!isDragging) return;
     isDragging = false;
     header.style.cursor = "grab";
+    if (stage) stage.style.cursor = "grab";
   }
 
   header.addEventListener("mousedown", onPointerDown);
+  if (stage) stage.addEventListener("mousedown", onPointerDown);
   window.addEventListener("mousemove", onPointerMove);
   window.addEventListener("mouseup", onPointerUp);
 
   header.addEventListener("touchstart", onPointerDown, { passive: false });
+  if (stage) stage.addEventListener("touchstart", onPointerDown, { passive: false });
   window.addEventListener("touchmove", onPointerMove, { passive: false });
   window.addEventListener("touchend", onPointerUp);
 }
