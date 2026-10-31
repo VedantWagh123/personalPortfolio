@@ -42,7 +42,7 @@ window.addEventListener("load", () => {
 // ============================================================
 // 2. HERO TYPEWRITER EFFECT
 // ============================================================
-const roles = ["Web Designer", "Frontend Developer", "BCA Student", "Creative Coder"];
+const roles = ["Software Developer", "Android Developer", "UI/UX Designer"];
 let roleIndex = 0;
 let charIndex = 0;
 const typingTarget = document.querySelector(".typing-role");
