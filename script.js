@@ -1264,37 +1264,63 @@ function initProjectsInteractions() {
   // Set initial visibility
   updateCardVisibility("all");
 
-  // Animate 4 Stats in Bar
+  // Animate 4 Stats in Bar with Ultra-Smooth requestAnimationFrame
   const statNums = document.querySelectorAll(".projects-stats-bar .stat-num");
-  if (statNums.length > 0 && "IntersectionObserver" in window) {
+  const statsBar = document.querySelector(".projects-stats-bar");
+
+  if (statNums.length > 0 && statsBar && "IntersectionObserver" in window) {
+    let hasAnimated = false;
+
+    function runStatsCounter() {
+      if (hasAnimated) return;
+      hasAnimated = true;
+
+      const duration = 1800; // 1.8 seconds for rich, engaging count
+      const startTime = performance.now();
+
+      const items = Array.from(statNums).map(el => {
+        const target = parseInt(el.getAttribute("data-count"), 10) || 0;
+        const isPct = el.parentElement.querySelector(".stat-lbl")?.textContent?.includes("Satisfaction") ||
+                      el.nextElementSibling?.textContent?.includes("Satisfaction");
+        return { el, target, isPct };
+      });
+
+      function update(now) {
+        const elapsed = now - startTime;
+        const progress = Math.min(1, elapsed / duration);
+        // ease-out quart for a very smooth deceleration
+        const ease = 1 - Math.pow(1 - progress, 4);
+
+        items.forEach(({ el, target, isPct }) => {
+          const current = Math.round(target * ease);
+          if (progress >= 1) {
+            el.textContent = target + (isPct ? "%" : "+");
+          } else {
+            el.textContent = current + (isPct ? "%" : "+");
+          }
+        });
+
+        if (progress < 1) {
+          requestAnimationFrame(update);
+        }
+      }
+
+      requestAnimationFrame(update);
+    }
+
     const statObserver = new IntersectionObserver((entries, obs) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          statNums.forEach(el => {
-            const target = parseInt(el.getAttribute("data-count"), 10);
-            if (!isNaN(target)) {
-              let current = 0;
-              const duration = 1200;
-              const step = Math.max(1, target / (duration / 25));
-              const timer = setInterval(() => {
-                current += step;
-                if (current >= target) {
-                  const isPct = el.nextElementSibling?.textContent?.includes("Satisfaction");
-                  el.textContent = target + (isPct ? "%" : "+");
-                  clearInterval(timer);
-                } else {
-                  el.textContent = Math.floor(current) + "+";
-                }
-              }, 25);
-            }
-          });
-          obs.disconnect();
+          runStatsCounter();
+          obs.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.3 });
+    }, {
+      threshold: 0.25,
+      rootMargin: "0px 0px -40px 0px"
+    });
 
-    const statsBar = document.querySelector(".projects-stats-bar");
-    if (statsBar) statObserver.observe(statsBar);
+    statObserver.observe(statsBar);
   }
 }
 
