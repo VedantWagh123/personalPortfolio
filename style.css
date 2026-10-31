@@ -7236,23 +7236,70 @@ footer,
   transform: scale(1.08);
 }
 
-/* Pinned Badge Indicator (Positioned neatly next to close button) */
-.preview-pinned-indicator {
+/* Pinned Zoom Toolbar (Appears at top-right next to close button, icon only, no text) */
+.preview-zoom-toolbar {
   position: absolute;
   top: 12px;
-  right: 52px;
-  background: #2563eb;
-  color: #ffffff;
-  font-size: 11px;
-  font-weight: 700;
-  padding: 5px 12px;
-  border-radius: 20px;
-  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+  right: 50px;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 3px;
+  padding: 3px 5px;
   z-index: 35;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
   animation: pinBounce 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.preview-pinned-indicator {
+  background: #2563eb;
+  color: #ffffff;
+  width: 24px;
+  height: 24px;
+  border-radius: 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+}
+
+.zoom-btn {
+  background: transparent;
+  border: none;
+  color: #cbd5e1;
+  width: 24px;
+  height: 24px;
+  border-radius: 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.zoom-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+}
+
+.zoom-btn.reset {
+  font-size: 10px;
+  color: #94a3b8;
+}
+
+.zoom-level-label {
+  color: #e2e8f0;
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 0 4px;
+  min-width: 32px;
+  text-align: center;
+  user-select: none;
 }
 
 @keyframes pinBounce {
@@ -7325,6 +7372,18 @@ footer,
   cursor: grabbing;
 }
 
+.floating-image-stage.is-pinned {
+  cursor: default;
+}
+
+.floating-image-stage.is-zoomed {
+  cursor: grab;
+}
+
+.floating-image-stage.is-panning {
+  cursor: grabbing;
+}
+
 .floating-image-stage img {
   width: 100%;
   height: 100%;
@@ -7332,7 +7391,9 @@ footer,
   object-position: top center;
   display: block;
   image-rendering: -webkit-optimize-contrast;
-  transition: transform 0.3s ease;
+  transform-origin: center center;
+  will-change: transform;
+  transition: transform 0.08s ease-out;
 }
 
 /* 3-Second Live Countdown Pill */

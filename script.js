@@ -1333,113 +1333,8 @@ if (document.readyState === "loading") {
 
 
 // ============================================================
-// DYNAMIC SIDE-PREVIEW WINDOW (IMG-ONLY TRIGGER, 60FPS LERP PHYSICS, 3S LIGHT-GREEN BUTTON)
+// DYNAMIC SIDE-PREVIEW WINDOW (IMG-ONLY TRIGGER, 60FPS LERP PHYSICS, SMART LOWER-SIDE ALIGNMENT & PIN ZOOM)
 // ============================================================
-// ============================================================
-// DYNAMIC 2-AT-A-TIME SERVICE HEADINGS TYPEWRITER ANIMATION
-// ============================================================
-function initServicesTypewriter() {
-  const headings = document.querySelectorAll(".service-title-rgb");
-  if (!headings.length) return;
-
-  const items = Array.from(headings).map(h => {
-    let textSpan = h.querySelector(".typewriter-text");
-    let cursorSpan = h.querySelector(".typewriter-cursor");
-    const full = h.getAttribute("data-full-text") || h.textContent.trim();
-    if (!textSpan) {
-      h.innerHTML = `<span class="typewriter-text">${full}</span><span class="typewriter-cursor">|</span>`;
-      textSpan = h.querySelector(".typewriter-text");
-      cursorSpan = h.querySelector(".typewriter-cursor");
-    }
-    return {
-      element: h,
-      textSpan: textSpan,
-      cursorSpan: cursorSpan,
-      fullText: full,
-      isTyping: false
-    };
-  });
-
-  // Exactly 2 cards can be actively animating at any given time
-  const MAX_ACTIVE = 2;
-  const activeIndices = new Set();
-
-  function runCardTypewriter(index) {
-    const item = items[index];
-    if (!item || item.isTyping) return;
-
-    item.isTyping = true;
-    activeIndices.add(index);
-    if (item.cursorSpan) item.cursorSpan.classList.add("active");
-
-    const full = item.fullText;
-    let currentLength = full.length;
-
-    // Step 1: Hold briefly before backspacing
-    setTimeout(() => {
-      // Step 2: Smooth deleting character by character
-      const deleteInterval = setInterval(() => {
-        if (currentLength > 0) {
-          currentLength--;
-          item.textSpan.textContent = full.slice(0, currentLength);
-        } else {
-          clearInterval(deleteInterval);
-          // Step 3: Brief pause when completely deleted
-          setTimeout(() => {
-            // Step 4: Type back forward smoothly character by character
-            const typeInterval = setInterval(() => {
-              if (currentLength < full.length) {
-                currentLength++;
-                item.textSpan.textContent = full.slice(0, currentLength);
-              } else {
-                clearInterval(typeInterval);
-                // Step 5: Finished typing! Hold cursor briefly then hide
-                setTimeout(() => {
-                  if (item.cursorSpan) item.cursorSpan.classList.remove("active");
-                  item.isTyping = false;
-                  activeIndices.delete(index);
-
-                  // Pick next dynamic card after a natural pause
-                  setTimeout(pickNextPairOrCard, 1200 + Math.random() * 1500);
-                }, 1600);
-              }
-            }, 65 + Math.random() * 20); // Smooth 65-85ms typing cadence
-          }, 350);
-        }
-      }, 35); // 35ms smooth backspace
-    }, 1000 + Math.random() * 1000);
-  }
-
-  function pickNextPairOrCard() {
-    if (activeIndices.size >= MAX_ACTIVE) return;
-
-    // Available cards that are not typing right now
-    const available = [];
-    for (let i = 0; i < items.length; i++) {
-      if (!activeIndices.has(i)) available.push(i);
-    }
-    if (!available.length) return;
-
-    // Pick random available card
-    const chosenIndex = available[Math.floor(Math.random() * available.length)];
-    runCardTypewriter(chosenIndex);
-  }
-
-  // Start with 2 random distinct cards after page load (staggered for organic rhythm)
-  setTimeout(() => {
-    const idx1 = Math.floor(Math.random() * items.length);
-    let idx2 = Math.floor(Math.random() * items.length);
-    while (idx2 === idx1 && items.length > 1) {
-      idx2 = Math.floor(Math.random() * items.length);
-    }
-
-    runCardTypewriter(idx1);
-    setTimeout(() => {
-      runCardTypewriter(idx2);
-    }, 1400);
-  }, 2000);
-}
-
 function initDraggableProjectPreview() {
   const modal = document.getElementById("floatingProjectPreview");
   const stage = document.getElementById("floatingImageStage");
@@ -1452,6 +1347,11 @@ function initDraggableProjectPreview() {
   const timerPill = document.getElementById("previewCountdownPill");
   const timerSec = document.getElementById("previewSecondsCount");
   const pinBadge = document.getElementById("previewPinnedIndicator");
+  const zoomToolbar = document.getElementById("previewZoomToolbar");
+  const zoomLevelText = document.getElementById("previewZoomLevel");
+  const zoomInBtn = document.getElementById("previewZoomIn");
+  const zoomOutBtn = document.getElementById("previewZoomOut");
+  const zoomResetBtn = document.getElementById("previewZoomReset");
 
   if (!modal) return;
 
@@ -1471,6 +1371,69 @@ function initDraggableProjectPreview() {
   let isRafActive = false;
   let rafId = null;
 
+  // Zoom & Pan State (Active when pinned)
+  let zoomScale = 1.0;
+  let panX = 0;
+  let panY = 0;
+  let isPanning = false;
+  let startPanMouseX = 0;
+  let startPanMouseY = 0;
+  let initialPanX = 0;
+  let initialPanY = 0;
+
+  function applyZoom() {
+    if (!modalImg) return;
+    modalImg.style.transform = `translate3d(${panX}px, ${panY}px, 0) scale(${zoomScale})`;
+    if (zoomLevelText) zoomLevelText.textContent = `${Math.round(zoomScale * 100)}%`;
+    if (stage) {
+      if (zoomScale > 1.0) {
+        stage.classList.add("is-zoomed");
+      } else {
+        stage.classList.remove("is-zoomed");
+      }
+    }
+  }
+
+  function setZoom(newScale) {
+    zoomScale = Math.max(1.0, Math.min(3.5, newScale));
+    if (zoomScale === 1.0) {
+      panX = 0;
+      panY = 0;
+    }
+    applyZoom();
+  }
+
+  function resetZoom() {
+    zoomScale = 1.0;
+    panX = 0;
+    panY = 0;
+    applyZoom();
+  }
+
+  // Mouse wheel zoom when pinned
+  if (stage) {
+    stage.addEventListener("wheel", (e) => {
+      if (!isPinned) return;
+      e.preventDefault();
+      const delta = e.deltaY < 0 ? 0.25 : -0.25;
+      setZoom(zoomScale + delta);
+    }, { passive: false });
+  }
+
+  // Zoom toolbar buttons
+  if (zoomInBtn) zoomInBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    setZoom(zoomScale + 0.35);
+  });
+  if (zoomOutBtn) zoomOutBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    setZoom(zoomScale - 0.35);
+  });
+  if (zoomResetBtn) zoomResetBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    resetZoom();
+  });
+
   function lerp(start, end, factor) {
     return start + (end - start) * factor;
   }
@@ -1478,7 +1441,7 @@ function initDraggableProjectPreview() {
   function updateRafLoop() {
     if (!isRafActive) return;
 
-    // 0.12 factor gives a velvety, buttery-smooth gliding response without jitter or lag
+    // 0.12 factor gives velvety-smooth 60fps/120fps glide
     const factor = 0.12;
     currentX = lerp(currentX, targetX, factor);
     currentY = lerp(currentY, targetY, factor);
@@ -1516,16 +1479,15 @@ function initDraggableProjectPreview() {
     const modalH = modal.offsetHeight || 330;
 
     const roomRight = window.innerWidth - cardRect.right;
-    const roomLeft = cardRect.left;
+    const isRightmost = (roomRight < modalW + 24);
 
     let baseSideX = 0;
-    // Always open to the SIDE of the card
-    if (roomRight >= modalW + 24) {
+    if (!isRightmost) {
+      // Normal left / middle cards: opens to the right
       baseSideX = cardRect.right + 20;
-    } else if (roomLeft >= modalW + 24) {
-      baseSideX = cardRect.left - modalW - 20;
     } else {
-      baseSideX = (roomRight >= roomLeft) ? Math.max(12, window.innerWidth - modalW - 15) : 15;
+      // Last / rightmost card: opens to the left
+      baseSideX = cardRect.left - modalW - 20;
     }
 
     // Relative mouse position within the card's image target (-0.5 to +0.5)
@@ -1537,10 +1499,17 @@ function initDraggableProjectPreview() {
       normY = Math.min(1, Math.max(0, (clientY - targetRect.top) / targetRect.height)) - 0.5;
     }
 
-    // Dynamic glide target coordinates
     targetX = baseSideX + (normX * 36);
-    const pointerY = (clientY !== undefined) ? clientY : (targetRect.top + targetRect.height / 2);
-    targetY = (pointerY - modalH * 0.45) + (normY * 26);
+
+    if (isRightmost) {
+      // User requested: "last wale card pe hover krne ke bad preview us ke thoda niche se ke side mai khulna chaiye dusre card ke uppar nhi ok"
+      // Position lower down below Card 2's image so Card 2's preview image is completely clear & unobstructed!
+      const lowerBaseY = cardRect.top + Math.min(220, cardRect.height * 0.48);
+      targetY = lowerBaseY + (normY * 20);
+    } else {
+      const pointerY = (clientY !== undefined) ? clientY : (targetRect.top + targetRect.height / 2);
+      targetY = (pointerY - modalH * 0.45) + (normY * 26);
+    }
 
     // Clamping within viewport
     targetX = Math.max(12, Math.min(window.innerWidth - modalW - 12, targetX));
@@ -1604,6 +1573,7 @@ function initDraggableProjectPreview() {
 
     if (!isPinned) {
       if (pinBadge) pinBadge.style.display = "none";
+      if (zoomToolbar) zoomToolbar.style.display = "none";
       startRaf();
     }
   }
@@ -1621,7 +1591,10 @@ function initDraggableProjectPreview() {
     isPinned = false;
     currentCard = null;
     isModalHovered = false;
+    resetZoom();
     if (pinBadge) pinBadge.style.display = "none";
+    if (zoomToolbar) zoomToolbar.style.display = "none";
+    if (stage) stage.classList.remove("is-pinned");
     if (countdownInterval) clearInterval(countdownInterval);
     if (countdownTimeout) clearTimeout(countdownTimeout);
     if (hoverLeaveTimeout) clearTimeout(hoverLeaveTimeout);
@@ -1631,11 +1604,16 @@ function initDraggableProjectPreview() {
     isPinned = pinned;
     if (isPinned) {
       stopRaf();
+      if (zoomToolbar) zoomToolbar.style.display = "inline-flex";
       if (pinBadge) pinBadge.style.display = "inline-flex";
       modal.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)";
+      if (stage) stage.classList.add("is-pinned");
       if (hoverLeaveTimeout) clearTimeout(hoverLeaveTimeout);
     } else {
+      if (zoomToolbar) zoomToolbar.style.display = "none";
       if (pinBadge) pinBadge.style.display = "none";
+      if (stage) stage.classList.remove("is-pinned");
+      resetZoom();
     }
   }
 
@@ -1645,7 +1623,7 @@ function initDraggableProjectPreview() {
     closePreview();
   });
 
-  // Double click on preview stage to pin
+  // Double click on preview stage to pin (no text "Pinned" shown)
   function handleDoubleClick(e) {
     e.stopPropagation();
     setPinned(true);
@@ -1665,7 +1643,6 @@ function initDraggableProjectPreview() {
   });
 
   // ATTACH TRIGGERS STRICTLY TO THE CARD IMAGE PORTION
-  // (User requirement: Preview tabhi dikhna chahiye jab user card ke IMG pe hover karega. Content portion pe hover karne par preview nahi aana chahiye)
   const allCards = document.querySelectorAll(".featured-project-card, .compact-project-card");
   allCards.forEach(card => {
     const imgTarget = card.querySelector(".card-preview-area") || card.querySelector(".compact-thumb-wrap");
@@ -1688,14 +1665,14 @@ function initDraggableProjectPreview() {
       openPreview(card, imgTarget, data, e);
     });
 
-    // Mouse Move on IMAGE ONLY: updates targets smoothly
+    // Mouse Move on IMAGE ONLY
     imgTarget.addEventListener("mousemove", (e) => {
       if (isPinned || isDragging || isModalHovered) return;
       if (modal.style.display === "none") return;
       computeTargetPosition(card, imgTarget, e.clientX, e.clientY);
     });
 
-    // Hover Leave IMAGE: Closes preview if user moves into content portion or elsewhere
+    // Hover Leave IMAGE
     imgTarget.addEventListener("mouseleave", () => {
       if (!isPinned && modal.style.display !== "none" && !isModalHovered) {
         hoverLeaveTimeout = setTimeout(() => {
@@ -1729,21 +1706,36 @@ function initDraggableProjectPreview() {
     }
   });
 
-  // Draggable logic for user to move anywhere
+  // Draggable logic for user to move anywhere & Pan when zoomed
   let startMouseX = 0;
   let startMouseY = 0;
   let initialModalLeft = 0;
   let initialModalTop = 0;
 
   function onPointerDown(e) {
-    if (e.target.closest(".corner-cross-btn") || e.target.closest(".floating-live-btn-green") || e.target.closest(".floating-gh-mini-btn")) {
+    if (e.target.closest(".corner-cross-btn") || e.target.closest(".floating-live-btn-green") || e.target.closest(".floating-gh-mini-btn") || e.target.closest(".preview-zoom-toolbar")) {
       return;
     }
+
+    const clientX = e.clientX || (e.touches && e.touches[0].clientX) || 0;
+    const clientY = e.clientY || (e.touches && e.touches[0].clientY) || 0;
+
+    // When pinned and zoomed in, dragging pans the zoomed image!
+    if (isPinned && zoomScale > 1.0 && (e.target === modalImg || e.target === stage)) {
+      isPanning = true;
+      if (stage) stage.classList.add("is-panning");
+      startPanMouseX = clientX;
+      startPanMouseY = clientY;
+      initialPanX = panX;
+      initialPanY = panY;
+      e.preventDefault();
+      return;
+    }
+
+    // Otherwise, drag the preview window
     isDragging = true;
     stopRaf();
     modal.classList.add("is-dragging");
-    const clientX = e.clientX || (e.touches && e.touches[0].clientX) || 0;
-    const clientY = e.clientY || (e.touches && e.touches[0].clientY) || 0;
     startMouseX = clientX;
     startMouseY = clientY;
     const rect = modal.getBoundingClientRect();
@@ -1754,33 +1746,54 @@ function initDraggableProjectPreview() {
   }
 
   function onPointerMove(e) {
-    if (!isDragging) return;
     const clientX = e.clientX || (e.touches && e.touches[0].clientX) || 0;
     const clientY = e.clientY || (e.touches && e.touches[0].clientY) || 0;
-    const deltaX = clientX - startMouseX;
-    const deltaY = clientY - startMouseY;
 
-    let newLeft = initialModalLeft + deltaX;
-    let newTop = initialModalTop + deltaY;
+    if (isPanning) {
+      const deltaX = clientX - startPanMouseX;
+      const deltaY = clientY - startPanMouseY;
+      let nextPanX = initialPanX + deltaX;
+      let nextPanY = initialPanY + deltaY;
 
-    const modalW = modal.offsetWidth;
-    const modalH = modal.offsetHeight;
-    newLeft = Math.max(10, Math.min(newLeft, window.innerWidth - modalW - 10));
-    newTop = Math.max(10, Math.min(newTop, window.innerHeight - modalH - 10));
+      const maxPanX = ((zoomScale - 1) * (stage.offsetWidth || 500)) / 2;
+      const maxPanY = ((zoomScale - 1) * (stage.offsetHeight || 300)) / 2;
+      panX = Math.max(-maxPanX, Math.min(maxPanX, nextPanX));
+      panY = Math.max(-maxPanY, Math.min(maxPanY, nextPanY));
+      applyZoom();
+      return;
+    }
 
-    currentX = newLeft;
-    currentY = newTop;
-    targetX = newLeft;
-    targetY = newTop;
-    modal.style.left = newLeft + "px";
-    modal.style.top = newTop + "px";
+    if (isDragging) {
+      const deltaX = clientX - startMouseX;
+      const deltaY = clientY - startMouseY;
+
+      let newLeft = initialModalLeft + deltaX;
+      let newTop = initialModalTop + deltaY;
+
+      const modalW = modal.offsetWidth;
+      const modalH = modal.offsetHeight;
+      newLeft = Math.max(10, Math.min(newLeft, window.innerWidth - modalW - 10));
+      newTop = Math.max(10, Math.min(newTop, window.innerHeight - modalH - 10));
+
+      currentX = newLeft;
+      currentY = newTop;
+      targetX = newLeft;
+      targetY = newTop;
+      modal.style.left = newLeft + "px";
+      modal.style.top = newTop + "px";
+    }
   }
 
   function onPointerUp() {
-    if (!isDragging) return;
-    isDragging = false;
-    modal.classList.remove("is-dragging");
-    if (stage) stage.style.cursor = "grab";
+    if (isPanning) {
+      isPanning = false;
+      if (stage) stage.classList.remove("is-panning");
+    }
+    if (isDragging) {
+      isDragging = false;
+      modal.classList.remove("is-dragging");
+      if (stage) stage.style.cursor = isPinned ? (zoomScale > 1.0 ? "grab" : "default") : "grab";
+    }
   }
 
   if (stage) {
@@ -1793,7 +1806,6 @@ function initDraggableProjectPreview() {
   window.addEventListener("touchend", onPointerUp);
 }
 
-// Initialize on DOM ready
 function initServicesAndPreview() {
   initDraggableProjectPreview();
   initServicesTypewriter();

@@ -1898,9 +1898,15 @@
       <i class="fas fa-times"></i>
     </button>
 
-    <!-- Pinned Indicator Badge -->
-    <div class="preview-pinned-indicator" id="previewPinnedIndicator" style="display: none;">
-      <i class="fas fa-thumbtack"></i> Pinned
+    <!-- Pinned Indicator Badge & Zoom Toolbar (No text 'Pinned') -->
+    <div class="preview-zoom-toolbar" id="previewZoomToolbar" style="display: none;">
+      <div class="preview-pinned-indicator" id="previewPinnedIndicator" title="Pinned">
+        <i class="fas fa-thumbtack"></i>
+      </div>
+      <button class="zoom-btn" id="previewZoomOut" title="Zoom Out"><i class="fas fa-minus"></i></button>
+      <span class="zoom-level-label" id="previewZoomLevel">100%</span>
+      <button class="zoom-btn" id="previewZoomIn" title="Zoom In"><i class="fas fa-plus"></i></button>
+      <button class="zoom-btn reset" id="previewZoomReset" title="Reset Zoom"><i class="fas fa-undo"></i></button>
     </div>
 
     <!-- Floating Subtle Project Pill (Top-Left) -->
