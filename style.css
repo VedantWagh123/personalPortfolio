@@ -8507,3 +8507,71 @@ footer,
   color: #0f172a !important;
   margin: 0 !important;
 }
+
+/* Ultra-Smooth Code Window Typewriter Styling */
+.card-code {
+  width: 255px !important;
+  min-height: 252px !important;
+}
+
+.code-typed-role {
+  color: #34d399 !important;
+  font-weight: 500 !important;
+  text-shadow: 0 0 10px rgba(52, 211, 153, 0.25) !important;
+}
+
+.code-caret {
+  display: inline-block !important;
+  width: 2px !important;
+  height: 1.15em !important;
+  background: #38bdf8 !important;
+  margin-left: 2px !important;
+  vertical-align: -2px !important;
+  animation: codeCaretBlink 0.75s step-end infinite !important;
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.9) !important;
+}
+
+@keyframes codeCaretBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+#codeTypedSkills {
+  display: inline !important;
+  transition: opacity 0.25s ease, transform 0.25s ease !important;
+}
+
+#codeTypedSkills.skill-fade {
+  opacity: 0.1 !important;
+  transform: translateY(-2px) !important;
+}
+
+#codeTypedMindset {
+  color: #34d399 !important;
+  transition: opacity 0.25s ease !important;
+}
+
+.terminal-caret {
+  display: inline-block !important;
+  width: 2px !important;
+  height: 11px !important;
+  background: #38bdf8 !important;
+  margin-left: 2px !important;
+  vertical-align: middle !important;
+  animation: codeCaretBlink 0.75s step-end infinite !important;
+  box-shadow: 0 0 6px rgba(56, 189, 248, 0.8) !important;
+}
+
+.terminal-success {
+  transition: opacity 0.3s ease, transform 0.3s ease, color 0.3s ease !important;
+}
+
+.terminal-success.pulse-check {
+  animation: pulseGreenGlow 0.85s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+@keyframes pulseGreenGlow {
+  0% { transform: scale(0.96); filter: drop-shadow(0 0 0 rgba(52, 211, 153, 0)); }
+  45% { transform: scale(1.05); filter: drop-shadow(0 0 10px rgba(52, 211, 153, 0.9)); color: #6ee7b7 !important; }
+  100% { transform: scale(1); filter: drop-shadow(0 0 0 rgba(52, 211, 153, 0)); }
+}

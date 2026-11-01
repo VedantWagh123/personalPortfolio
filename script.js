@@ -1037,155 +1037,130 @@ document.addEventListener("DOMContentLoaded", () => {
 // 16. AUTOMATIC VIRTUAL CURSOR DEMO ON HERO SECTION
 // (Glide Up from Below -> Click Terminal -> Live Type -> Fade Out)
 // ============================================================
-(function initVirtualCursorDemo() {
-  const cursor = document.getElementById("virtualCursor");
-  const ripple = document.getElementById("vcRipple");
-  const terminalCmd = document.getElementById("heroTerminalCmd");
-  const terminalStatus = document.getElementById("heroTerminalStatus");
-  const cardCode = document.querySelector(".card-code");
-  const stage = document.querySelector(".hero-stage");
+// ============================================================
+// 16. ULTRA-SMOOTH CODE CARD TYPEWRITER ENGINE (developer.js)
+// ============================================================
+(function initHeroCodeTypewriter() {
+  const roleEl = document.getElementById("codeTypedRole");
+  const skillsEl = document.getElementById("codeTypedSkills");
+  const mindsetEl = document.getElementById("codeTypedMindset");
+  const cmdEl = document.getElementById("termCmdText");
+  const statusEl = document.getElementById("heroTerminalStatus");
+  const caretEl = document.getElementById("codeCaret");
 
-  if (!cursor || !stage || !terminalCmd) return;
+  if (!roleEl || !skillsEl) return;
 
+  const presets = [
+    {
+      role: "Software Development Engineer",
+      skills: '<span class="str">"Full-Stack"</span>, <span class="str">"Cloud"</span>, <span class="str">"AI"</span>',
+      mindset: "Build &amp; Scale",
+      cmd: "npm run dev",
+      status: 'Compiled successfully in 0.18s <i class="fas fa-check"></i>'
+    },
+    {
+      role: "Full-Stack Engineer",
+      skills: '<span class="str">"React.js"</span>, <span class="str">"Node.js"</span>, <span class="str">"MongoDB"</span>',
+      mindset: "High Performance",
+      cmd: "npm run test",
+      status: 'All 24 test suites passed <i class="fas fa-check"></i>'
+    },
+    {
+      role: "Backend & Microservices Dev",
+      skills: '<span class="str">"Docker"</span>, <span class="str">"AWS"</span>, <span class="str">"Redis"</span>',
+      mindset: "99.9% Uptime",
+      cmd: "npm run deploy",
+      status: 'Deployed to AWS EC2 <i class="fas fa-check"></i>'
+    },
+    {
+      role: "React & Next.js Specialist",
+      skills: '<span class="str">"TypeScript"</span>, <span class="str">"Tailwind"</span>, <span class="str">"REST APIs"</span>',
+      mindset: "Clean Architecture",
+      cmd: "npm run build",
+      status: 'Production build ready <i class="fas fa-check"></i>'
+    }
+  ];
+
+  let currentIdx = 0;
   let isRunning = false;
 
-  function moveCursor(x, y, duration = 1000) {
-    return new Promise(resolve => {
-      cursor.style.transition = `transform ${duration}ms cubic-bezier(0.16, 1, 0.3, 1), opacity 0.45s ease`;
-      cursor.style.transform = `translate3d(${x}px, ${y}px, 0)`;
-      setTimeout(resolve, duration);
-    });
-  }
+  const sleep = (ms) => new Promise(res => setTimeout(res, ms));
 
-  function clickAt() {
-    return new Promise(resolve => {
-      cursor.classList.add("vc-clicking");
-      if (ripple) {
-        ripple.classList.remove("active");
-        void ripple.offsetWidth; // trigger reflow
-        ripple.classList.add("active");
-      }
-      if (cardCode) {
-        cardCode.classList.add("card-auto-active");
-      }
-      setTimeout(() => {
-        cursor.classList.remove("vc-clicking");
-        if (cardCode) {
-          setTimeout(() => cardCode.classList.remove("card-auto-active"), 400);
-        }
-        resolve();
-      }, 240);
-    });
-  }
-
-  function liveType(element, text, speed = 55) {
-    return new Promise(resolve => {
-      element.innerHTML = '<span class="typing-caret"></span>';
-      let i = 0;
-      function nextChar() {
-        if (i < text.length) {
-          element.innerHTML = text.substring(0, i + 1) + '<span class="typing-caret"></span>';
-          i++;
-          setTimeout(nextChar, speed + Math.random() * 25);
-        } else {
-          setTimeout(() => {
-            element.innerHTML = text;
-            resolve();
-          }, 350);
-        }
-      }
-      nextChar();
-    });
-  }
-
-  const sleep = (ms) => new Promise(r => setTimeout(r, ms));
-
-  async function runDemoLoop() {
-    if (!isRunning) return;
-
-    // Dynamically calculate the exact terminal coordinates inside hero-stage
-    const stageRect = stage.getBoundingClientRect();
-    const termRect = terminalCmd.getBoundingClientRect();
-
-    let targetX = 145;
-    let targetY = 220;
-
-    if (stageRect.width > 0 && termRect.width > 0) {
-      targetX = Math.round(termRect.left - stageRect.left + 15);
-      targetY = Math.round(termRect.top - stageRect.top - 2);
-    }
-
-    const startX = targetX + 25;
-    const startY = targetY + 230; // Visibly starts from below (niche se)
-
-    // Step 0: Position below the card, invisible
-    cursor.style.transition = "none";
-    cursor.style.transform = `translate3d(${startX}px, ${startY}px, 0)`;
-    cursor.style.opacity = "0";
-
-    await sleep(250);
-    if (!isRunning) return;
-
-    // Step 1: Fade in and smoothly glide UPWARDS to the terminal line
-    cursor.style.opacity = "1";
-    await moveCursor(targetX, targetY, 1150);
-    await sleep(280);
-
-    // Step 2: Click on the terminal command line
-    await clickAt();
-    await sleep(200);
-
-    // Step 3: Proper smooth typewriter animation
-    await liveType(terminalCmd, "> npm run build --prod", 50);
-
-    // Step 4: Show success confirmation with green check
-    if (terminalStatus) {
-      terminalStatus.style.transition = "opacity 0.3s ease, transform 0.3s ease";
-      terminalStatus.style.opacity = "0";
-      terminalStatus.style.transform = "translateY(4px)";
-      await sleep(150);
-      terminalStatus.innerHTML = '<span style="color:#10b981;font-weight:600;">✓ Compiled successfully in 0.2s</span>';
-      terminalStatus.style.opacity = "1";
-      terminalStatus.style.transform = "translateY(0)";
-    }
-
-    // Step 5: Pause so user can clearly see the typed command and success message
-    await sleep(1200);
-
-    // Step 6: Smoothly glide down-right and gracefully fade away
-    const exitX = targetX + 130;
-    const exitY = targetY + 220;
-    cursor.style.opacity = "0";
-    await moveCursor(exitX, exitY, 950);
-
-    // Step 7: Wait before resetting and repeating
-    await sleep(1400);
-
-    // Reset terminal content back to original
-    if (terminalCmd) terminalCmd.textContent = "> npm run dev";
-    if (terminalStatus) terminalStatus.innerHTML = 'Compiled successfully <i class="fas fa-check"></i>';
-
-    await sleep(2600);
-    if (isRunning) {
-      runDemoLoop();
+  async function typeText(el, text, baseSpeed = 48) {
+    el.textContent = "";
+    for (let i = 0; i < text.length; i++) {
+      el.textContent += text[i];
+      // Human-like natural micro-jitter
+      await sleep(baseSpeed + Math.floor(Math.random() * 22));
     }
   }
 
-  function start() {
+  async function deleteText(el, speed = 22) {
+    let current = el.textContent;
+    while (current.length > 0) {
+      current = current.slice(0, -1);
+      el.textContent = current;
+      await sleep(speed);
+    }
+  }
+
+  async function startLoop() {
     if (isRunning) return;
     isRunning = true;
-    runDemoLoop();
+
+    // Small delay before starting first cycle
+    await sleep(1000);
+
+    while (isRunning) {
+      const preset = presets[currentIdx];
+
+      // 1. Delete previous role if any
+      if (roleEl.textContent.trim().length > 0) {
+        await sleep(2600); // Wait time before deleting current role
+        await deleteText(roleEl, 20);
+        await sleep(180);
+      }
+
+      // 2. Cross-fade skills and mindset to the current preset
+      if (skillsEl) {
+        skillsEl.classList.add("skill-fade");
+        await sleep(150);
+        skillsEl.innerHTML = preset.skills;
+        if (mindsetEl) mindsetEl.innerHTML = preset.mindset;
+        skillsEl.classList.remove("skill-fade");
+      }
+
+      // 3. Typewrite current role smoothly
+      await typeText(roleEl, preset.role, 48);
+
+      // 4. Smoothly update terminal command line
+      if (cmdEl) {
+        await sleep(150);
+        await typeText(cmdEl, preset.cmd, 32);
+      }
+
+      // 5. Trigger terminal compiled success status with green pulse
+      if (statusEl) {
+        statusEl.innerHTML = preset.status;
+        statusEl.classList.remove("pulse-check");
+        void statusEl.offsetWidth; // reflow
+        statusEl.classList.add("pulse-check");
+      }
+
+      // 6. Advance index for next cycle
+      currentIdx = (currentIdx + 1) % presets.length;
+    }
   }
 
-  // Start after preloader completes
-  window.addEventListener("load", () => {
-    setTimeout(start, 3200);
-  });
-
-  // Fallback trigger if page already loaded
-  setTimeout(start, 3500);
+  // Trigger after preloader completes (3.2s) or right away if page already loaded
+  if (document.readyState === "complete") {
+    setTimeout(startLoop, 1200);
+  } else {
+    window.addEventListener("load", () => {
+      setTimeout(startLoop, 3200);
+    });
+  }
 })();
-
 
 // ============================================================
 // 17. DYNAMIC RANDOM RGB COLOR SHIMMER ON SERVICE HEADINGS
