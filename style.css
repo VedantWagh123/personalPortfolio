@@ -6578,10 +6578,10 @@ section, .about, .services-section, .projects-page-section, .testimonial-section
   gap: 16px !important;
 }
 
-/* 5. About Section Note Card - Moved Outward to Keep Face 100% Clear */
+/* 5. About Section Note Card - Clean Placement next to Illustration */
 .about-note-card {
-  top: 35px !important;
-  left: -75px !important;
+  top: 15px !important;
+  left: 45px !important;
 }
 
 .about-doodle-arrow {
