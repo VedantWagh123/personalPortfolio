@@ -42,7 +42,7 @@ window.addEventListener("load", () => {
 // ============================================================
 // 2. HERO TYPEWRITER EFFECT
 // ============================================================
-const roles = ["Software Developer", "Android Developer", "UI/UX Designer"];
+const roles = ["Software Development Engineer", "Full-Stack Engineer", "Backend & Microservices Developer", "React & Node.js Specialist"];
 let roleIndex = 0;
 let charIndex = 0;
 const typingTarget = document.querySelector(".typing-role");
@@ -466,14 +466,9 @@ function initCvAndBlogModals() {
 
   cvButtons.forEach(btn => {
     if (btn) {
-      btn.addEventListener("click", (e) => {
-        e.preventDefault();
-        if (cvModal) {
-          cvModal.style.display = "flex";
-          setTimeout(() => { cvModal.style.opacity = "1"; }, 10);
-        } else {
-          showNotificationToast("CV Download", "The CV download feature is currently being updated!");
-        }
+      btn.addEventListener("click", () => {
+        // Direct native browser download of Vedant_Wagh_Resume.pdf
+        showNotificationToast("Resume Download", "Downloading Vedant's resume...");
       });
     }
   });
