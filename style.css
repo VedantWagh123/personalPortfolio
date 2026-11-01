@@ -5096,7 +5096,7 @@ section, .about, .services-section, .projects-page-section, .testimonial-section
   z-index: 1 !important;
 }
 
-/* Person Photo Seamless Integration - Ultra Sharp HD */
+/* Person Photo Seamless Integration */
 .hero-person-wrap {
   position: relative !important;
   z-index: 3 !important;
@@ -5129,16 +5129,9 @@ section, .about, .services-section, .projects-page-section, .testimonial-section
   outline: none !important;
   background: transparent !important;
   box-shadow: none !important;
-  filter: none !important;
-  -webkit-filter: none !important;
-  mask-image: none !important;
-  -webkit-mask-image: none !important;
-  image-rendering: -webkit-optimize-contrast !important;
-  image-rendering: crisp-edges !important;
-  image-rendering: high-quality !important;
-  backface-visibility: visible !important;
-  -webkit-backface-visibility: visible !important;
-  transform: translateZ(0) !important;
+  filter: drop-shadow(0 16px 30px rgba(37, 99, 235, 0.12)) !important;
+  mask-image: linear-gradient(to bottom, black 88%, transparent 100%) !important;
+  -webkit-mask-image: linear-gradient(to bottom, black 88%, transparent 100%) !important;
   user-select: none !important;
   pointer-events: none !important;
 }
@@ -5807,13 +5800,6 @@ section, .about, .services-section, .projects-page-section, .testimonial-section
 .hero-section.hero-cinematic-active.hero-floating-ready .hero-tech-arc .tech-orb:nth-child(3) { animation-delay: 1.6s !important; }
 .hero-section.hero-cinematic-active.hero-floating-ready .hero-tech-arc .tech-orb:nth-child(4) { animation-delay: 2.4s !important; }
 .hero-section.hero-cinematic-active.hero-floating-ready .hero-tech-arc .tech-orb:nth-child(5) { animation-delay: 3.2s !important; }
-
-/* Lock portrait at 100% native resolution with zero transform blur after entrance */
-.hero-section.hero-cinematic-active.hero-floating-ready .hero-person-wrap {
-  opacity: 1 !important;
-  transform: none !important;
-  animation: none !important;
-}
 
 /* Accessibility: Reduced Motion Support */
 @media (prefers-reduced-motion: reduce) {
