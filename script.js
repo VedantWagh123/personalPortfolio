@@ -16,16 +16,51 @@ function ensureHeroVisible() {
 // Ensure hero is visible as soon as DOM loads
 document.addEventListener("DOMContentLoaded", ensureHeroVisible);
 
+// Hero Cinematic Page-Load Entrance Controller
+let heroEntrancePlayed = false;
+function playHeroCinematicEntrance() {
+  if (heroEntrancePlayed) return;
+  heroEntrancePlayed = true;
+
+  const hero = document.querySelector(".hero-section");
+  if (!hero) return;
+
+  ensureHeroVisible();
+  hero.classList.add("hero-cinematic-active");
+
+  // Synchronized typewriter start: begins typing live at 750ms as subheadline reveals
+  setTimeout(() => {
+    roleIndex = 0;
+    charIndex = 0;
+    if (typingTarget) typingTarget.textContent = "";
+    typeEffect();
+  }, 750);
+
+  // Seamlessly transition to continuous floating animations after entrance sequence completes (2000ms)
+  setTimeout(() => {
+    hero.classList.add("hero-floating-ready");
+  }, 2050);
+}
+
 window.addEventListener("load", () => {
   ensureHeroVisible();
   const preloader = document.getElementById("preloader");
-  if (!preloader) return;
+
+  // If no preloader or already dismissed, trigger immediately
+  if (!preloader || preloader.classList.contains("loaded") || preloader.style.display === "none") {
+    playHeroCinematicEntrance();
+    return;
+  }
 
   const hidePreloader = () => {
     preloader.classList.add("loaded");
     preloader.style.transition = "opacity 0.6s ease, visibility 0.6s ease";
     preloader.style.opacity = "0";
     preloader.style.visibility = "hidden";
+
+    // Play cinematic hero entrance immediately as the white preloader fades out!
+    playHeroCinematicEntrance();
+
     setTimeout(() => {
       preloader.classList.add("hidden");
       preloader.style.display = "none";
@@ -34,10 +69,17 @@ window.addEventListener("load", () => {
     }, 600);
   };
 
-  // Always show preloader animation for exactly 3 seconds on every load/refresh
+  // Preloader duration: 2.2s for snappy feel, then seamless cinematic reveal
   sessionStorage.removeItem("hasVisited");
-  setTimeout(hidePreloader, 3000);
+  setTimeout(hidePreloader, 2200);
 });
+
+// Safety fallback: ensure hero entrance always triggers even on slow network
+setTimeout(() => {
+  if (!heroEntrancePlayed) {
+    playHeroCinematicEntrance();
+  }
+}, 3200);
 
 // ============================================================
 // 2. HERO TYPEWRITER EFFECT
@@ -74,9 +116,7 @@ function eraseEffect() {
   setTimeout(typeEffect, 300);
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  setTimeout(typeEffect, 1200);
-});
+// Typewriter is now coordinated directly inside playHeroCinematicEntrance() for perfect page-load timing
 
 // ============================================================
 // 3. BACKGROUND CANVAS PARTICLES (OPTIMIZED RAF LOOP)

@@ -5417,6 +5417,418 @@ section, .about, .services-section, .projects-page-section, .testimonial-section
   50% { transform: translateY(-8px); }
 }
 
+/* ============================================================
+   PREMIUM CINEMATIC HERO PAGE-LOAD ENTRANCE SYSTEM
+   ============================================================ */
+
+/* Initial pre-animation state before entrance triggers */
+.hero-section:not(.hero-cinematic-active) .hero-status-pill,
+.hero-section:not(.hero-cinematic-active) .hero-eyebrow,
+.hero-section:not(.hero-cinematic-active) .hero-headline,
+.hero-section:not(.hero-cinematic-active) .hero-subheadline,
+.hero-section:not(.hero-cinematic-active) .hero-description,
+.hero-section:not(.hero-cinematic-active) .hero-cta-group,
+.hero-section:not(.hero-cinematic-active) .hero-social-pills-row .social-pill,
+.hero-section:not(.hero-cinematic-active) .hero-stat-item,
+.hero-section:not(.hero-cinematic-active) .stat-divider,
+.hero-section:not(.hero-cinematic-active) .hero-aura-blob,
+.hero-section:not(.hero-cinematic-active) .hero-tech-dots,
+.hero-section:not(.hero-cinematic-active) .hero-orbit-svg,
+.hero-section:not(.hero-cinematic-active) .hero-person-wrap,
+.hero-section:not(.hero-cinematic-active) .card-code,
+.hero-section:not(.hero-cinematic-active) .hero-doodle-note,
+.hero-section:not(.hero-cinematic-active) .card-rocket,
+.hero-section:not(.hero-cinematic-active) .card-performance,
+.hero-section:not(.hero-cinematic-active) .card-ideas,
+.hero-section:not(.hero-cinematic-active) .card-deploy,
+.hero-section:not(.hero-cinematic-active) .hero-tech-arc .tech-orb {
+  opacity: 0 !important;
+}
+
+/* Keyframes with cubic-bezier(0.22, 1, 0.36, 1) */
+@keyframes heroFadeDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes heroFadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes heroHeadlineReveal {
+  0% {
+    opacity: 0;
+    transform: translateY(24px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes heroCtaReveal {
+  0% {
+    opacity: 0;
+    transform: translateY(14px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes heroSocialPop {
+  0% {
+    opacity: 0;
+    transform: translateY(16px) scale(0.82);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes heroStatReveal {
+  0% {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes heroAuraReveal {
+  0% {
+    opacity: 0;
+    transform: scale(0.84);
+  }
+  100% {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+}
+
+@keyframes heroOrbitReveal {
+  0% {
+    opacity: 0;
+    transform: scale(0.90);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Main Portrait: Scale 94% -> 100% + subtle upward floating entrance */
+@keyframes heroPortraitEntrance {
+  0% {
+    opacity: 0;
+    transform: translateY(28px) scale(0.94);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Card 1 (Code Editor): Slide in from left */
+@keyframes heroCardCodeSlideLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(-40px) translateY(12px) scale(0.94);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) translateY(0) scale(1);
+  }
+}
+
+/* Doodle note & arrow */
+@keyframes heroDoodleReveal {
+  0% {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Card 2 (Rocket): Slide in from top-right */
+@keyframes heroCardRocketSlide {
+  0% {
+    opacity: 0;
+    transform: translateX(36px) translateY(-16px) scale(0.92);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) translateY(0) scale(1);
+  }
+}
+
+/* Card 3 (Performance/Lightbulb): Slide in from middle-right */
+@keyframes heroCardPerformanceSlide {
+  0% {
+    opacity: 0;
+    transform: translateX(38px) scale(0.92);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+/* Card 4 (Creative Problem Solver): Slide in from middle-left */
+@keyframes heroCardIdeasSlide {
+  0% {
+    opacity: 0;
+    transform: translateX(-38px) scale(0.92);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+/* Card 5 (Modern Tech / Deploy): Slide in from bottom-right */
+@keyframes heroCardDeploySlide {
+  0% {
+    opacity: 0;
+    transform: translateX(28px) translateY(20px) scale(0.92);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) translateY(0) scale(1);
+  }
+}
+
+/* Tech Orbs Arc */
+@keyframes heroTechOrbEntrance {
+  0% {
+    opacity: 0;
+    transform: translateY(22px) scale(0.72);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ============================================================
+   LEFT CONTENT ANIMATION RULES (SEQUENTIAL REVEAL)
+   ============================================================ */
+
+/* 1. Availability badge (200ms - 650ms) */
+.hero-section.hero-cinematic-active .hero-status-pill {
+  animation: heroFadeDown 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.20s both !important;
+}
+
+/* 2. Professional role label (280ms - 750ms) */
+.hero-section.hero-cinematic-active .hero-eyebrow {
+  animation: heroFadeUp 0.47s cubic-bezier(0.22, 1, 0.36, 1) 0.28s both !important;
+}
+
+/* 3. Main heading (400ms - 900ms) */
+.hero-section.hero-cinematic-active .hero-headline {
+  animation: heroHeadlineReveal 0.50s cubic-bezier(0.22, 1, 0.36, 1) 0.40s both !important;
+}
+
+/* 4. Subheadline / animated role (700ms - 1150ms) */
+.hero-section.hero-cinematic-active .hero-subheadline {
+  animation: heroFadeUp 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.70s both !important;
+}
+
+/* 5. Description paragraph (900ms - 1350ms) */
+.hero-section.hero-cinematic-active .hero-description {
+  animation: heroFadeUp 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.90s both !important;
+}
+
+/* 6. CTA buttons (1100ms - 1550ms) */
+.hero-section.hero-cinematic-active .hero-cta-group {
+  animation: heroCtaReveal 0.45s cubic-bezier(0.22, 1, 0.36, 1) 1.10s both !important;
+}
+
+/* 7. Social media icons staggered (1300ms - 1750ms) */
+.hero-section.hero-cinematic-active .hero-social-pills-row .social-pill:nth-child(1) {
+  animation: heroSocialPop 0.40s cubic-bezier(0.22, 1, 0.36, 1) 1.30s both !important;
+}
+.hero-section.hero-cinematic-active .hero-social-pills-row .social-pill:nth-child(2) {
+  animation: heroSocialPop 0.40s cubic-bezier(0.22, 1, 0.36, 1) 1.38s both !important;
+}
+.hero-section.hero-cinematic-active .hero-social-pills-row .social-pill:nth-child(3) {
+  animation: heroSocialPop 0.40s cubic-bezier(0.22, 1, 0.36, 1) 1.46s both !important;
+}
+.hero-section.hero-cinematic-active .hero-social-pills-row .social-pill:nth-child(4) {
+  animation: heroSocialPop 0.40s cubic-bezier(0.22, 1, 0.36, 1) 1.54s both !important;
+}
+.hero-section.hero-cinematic-active .hero-social-pills-row .social-pill:nth-child(5) {
+  animation: heroSocialPop 0.40s cubic-bezier(0.22, 1, 0.36, 1) 1.62s both !important;
+}
+
+/* 8. Statistics row staggered (1450ms - 1850ms) */
+.hero-section.hero-cinematic-active .hero-stat-item:nth-child(1) {
+  animation: heroStatReveal 0.40s cubic-bezier(0.22, 1, 0.36, 1) 1.45s both !important;
+}
+.hero-section.hero-cinematic-active .stat-divider:nth-child(2) {
+  animation: heroStatReveal 0.40s cubic-bezier(0.22, 1, 0.36, 1) 1.52s both !important;
+}
+.hero-section.hero-cinematic-active .hero-stat-item:nth-child(3) {
+  animation: heroStatReveal 0.40s cubic-bezier(0.22, 1, 0.36, 1) 1.58s both !important;
+}
+.hero-section.hero-cinematic-active .stat-divider:nth-child(4) {
+  animation: heroStatReveal 0.40s cubic-bezier(0.22, 1, 0.36, 1) 1.64s both !important;
+}
+.hero-section.hero-cinematic-active .hero-stat-item:nth-child(5) {
+  animation: heroStatReveal 0.40s cubic-bezier(0.22, 1, 0.36, 1) 1.70s both !important;
+}
+
+/* ============================================================
+   RIGHT-SIDE HERO VISUAL ANIMATION RULES
+   ============================================================ */
+
+/* Atmosphere, Aura & Decorative Dots (0 - 500ms) */
+.hero-section.hero-cinematic-active .hero-aura-blob {
+  animation: heroAuraReveal 0.70s cubic-bezier(0.22, 1, 0.36, 1) 0.05s both !important;
+}
+.hero-section.hero-cinematic-active .hero-tech-dots {
+  animation: heroFadeUp 0.60s cubic-bezier(0.22, 1, 0.36, 1) 0.15s both !important;
+}
+
+/* Orbit SVG Path (300ms - 850ms) */
+.hero-section.hero-cinematic-active .hero-orbit-svg {
+  animation: heroOrbitReveal 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.30s both !important;
+}
+
+/* Main Portrait: Scale 94% -> 100% + subtle upward floating entrance (300ms - 950ms) */
+.hero-section.hero-cinematic-active .hero-person-wrap {
+  animation: heroPortraitEntrance 0.65s cubic-bezier(0.22, 1, 0.36, 1) 0.30s both !important;
+}
+
+/* Developer Code Editor Card: Slide in from Left (700ms - 1300ms) */
+.hero-section.hero-cinematic-active:not(.hero-floating-ready) .card-code {
+  animation: heroCardCodeSlideLeft 0.60s cubic-bezier(0.22, 1, 0.36, 1) 0.70s both !important;
+}
+
+/* Handwritten Doodle Arrow & Note (950ms - 1400ms) */
+.hero-section.hero-cinematic-active .hero-doodle-note {
+  animation: heroDoodleReveal 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.95s both !important;
+}
+
+/* Card 2: Rocket (Top-Right) (800ms - 1350ms) */
+.hero-section.hero-cinematic-active:not(.hero-floating-ready) .card-rocket {
+  animation: heroCardRocketSlide 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.80s both !important;
+}
+
+/* Card 3: Lightbulb / Performance (Middle-Right) (1000ms - 1550ms) */
+.hero-section.hero-cinematic-active:not(.hero-floating-ready) .card-performance {
+  animation: heroCardPerformanceSlide 0.55s cubic-bezier(0.22, 1, 0.36, 1) 1.00s both !important;
+}
+
+/* Card 4: Creative Problem Solver (Middle-Left) (1150ms - 1650ms) */
+.hero-section.hero-cinematic-active:not(.hero-floating-ready) .card-ideas {
+  animation: heroCardIdeasSlide 0.50s cubic-bezier(0.22, 1, 0.36, 1) 1.15s both !important;
+}
+
+/* Card 5: Modern Tech / Deploy (Bottom-Right) (1300ms - 1750ms) */
+.hero-section.hero-cinematic-active:not(.hero-floating-ready) .card-deploy {
+  animation: heroCardDeploySlide 0.45s cubic-bezier(0.22, 1, 0.36, 1) 1.30s both !important;
+}
+
+/* Technology Icons Arc (1400ms - 1950ms) */
+.hero-section.hero-cinematic-active:not(.hero-floating-ready) .hero-tech-arc .tech-orb:nth-child(1) {
+  animation: heroTechOrbEntrance 0.45s cubic-bezier(0.22, 1, 0.36, 1) 1.40s both !important;
+}
+.hero-section.hero-cinematic-active:not(.hero-floating-ready) .hero-tech-arc .tech-orb:nth-child(2) {
+  animation: heroTechOrbEntrance 0.45s cubic-bezier(0.22, 1, 0.36, 1) 1.49s both !important;
+}
+.hero-section.hero-cinematic-active:not(.hero-floating-ready) .hero-tech-arc .tech-orb:nth-child(3) {
+  animation: heroTechOrbEntrance 0.45s cubic-bezier(0.22, 1, 0.36, 1) 1.58s both !important;
+}
+.hero-section.hero-cinematic-active:not(.hero-floating-ready) .hero-tech-arc .tech-orb:nth-child(4) {
+  animation: heroTechOrbEntrance 0.45s cubic-bezier(0.22, 1, 0.36, 1) 1.67s both !important;
+}
+.hero-section.hero-cinematic-active:not(.hero-floating-ready) .hero-tech-arc .tech-orb:nth-child(5) {
+  animation: heroTechOrbEntrance 0.45s cubic-bezier(0.22, 1, 0.36, 1) 1.76s both !important;
+}
+
+/* ============================================================
+   AFTER ENTRANCE: CONTINUOUS FLOATING ANIMATIONS
+   ============================================================ */
+.hero-section.hero-cinematic-active.hero-floating-ready .card-code {
+  opacity: 1 !important;
+  animation: floatSlow1 5.5s ease-in-out infinite !important;
+}
+.hero-section.hero-cinematic-active.hero-floating-ready .card-rocket {
+  opacity: 1 !important;
+  animation: floatSlow2 6.0s ease-in-out infinite !important;
+}
+.hero-section.hero-cinematic-active.hero-floating-ready .card-performance {
+  opacity: 1 !important;
+  animation: floatSlow3 5.5s ease-in-out infinite !important;
+}
+.hero-section.hero-cinematic-active.hero-floating-ready .card-ideas {
+  opacity: 1 !important;
+  animation: floatSlow2 6.5s ease-in-out infinite !important;
+}
+.hero-section.hero-cinematic-active.hero-floating-ready .card-deploy {
+  opacity: 1 !important;
+  animation: floatSlow1 5.8s ease-in-out infinite !important;
+}
+
+.hero-section.hero-cinematic-active.hero-floating-ready .hero-tech-arc .tech-orb {
+  opacity: 1 !important;
+  animation: floatSlow2 6.0s ease-in-out infinite !important;
+}
+.hero-section.hero-cinematic-active.hero-floating-ready .hero-tech-arc .tech-orb:nth-child(1) { animation-delay: 0s !important; }
+.hero-section.hero-cinematic-active.hero-floating-ready .hero-tech-arc .tech-orb:nth-child(2) { animation-delay: 0.8s !important; }
+.hero-section.hero-cinematic-active.hero-floating-ready .hero-tech-arc .tech-orb:nth-child(3) { animation-delay: 1.6s !important; }
+.hero-section.hero-cinematic-active.hero-floating-ready .hero-tech-arc .tech-orb:nth-child(4) { animation-delay: 2.4s !important; }
+.hero-section.hero-cinematic-active.hero-floating-ready .hero-tech-arc .tech-orb:nth-child(5) { animation-delay: 3.2s !important; }
+
+/* Accessibility: Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .hero-section .hero-status-pill,
+  .hero-section .hero-eyebrow,
+  .hero-section .hero-headline,
+  .hero-section .hero-subheadline,
+  .hero-section .hero-description,
+  .hero-section .hero-cta-group,
+  .hero-section .hero-social-pills-row .social-pill,
+  .hero-section .hero-stat-item,
+  .hero-section .stat-divider,
+  .hero-section .hero-aura-blob,
+  .hero-section .hero-tech-dots,
+  .hero-section .hero-orbit-svg,
+  .hero-section .hero-person-wrap,
+  .hero-section .card-code,
+  .hero-section .hero-doodle-note,
+  .hero-section .card-rocket,
+  .hero-section .card-performance,
+  .hero-section .card-ideas,
+  .hero-section .card-deploy,
+  .hero-section .hero-tech-arc .tech-orb {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+  }
+}
+
 /* Hero Responsiveness */
 @media (max-width: 1180px) {
   .hero-container-exact {
