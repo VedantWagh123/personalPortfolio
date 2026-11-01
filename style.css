@@ -8047,13 +8047,30 @@ footer,
   border-radius: 12px !important;
   background: #ffffff !important;
   box-shadow: 0 25px 70px rgba(15, 23, 42, 0.28), 0 6px 22px rgba(0, 0, 0, 0.1) !important;
-  overflow: hidden;
+  overflow: visible !important;
   pointer-events: auto;
   user-select: none;
   transform-origin: center center;
   opacity: 0;
-  transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: left, top, transform;
+  will-change: left, top, transform, opacity;
+}
+
+/* Invisible hit bridge between card edge and preview window so cursor movement is seamless */
+.floating-side-preview::before {
+  content: "";
+  position: absolute;
+  top: -12px;
+  bottom: -12px;
+  left: -32px;
+  width: 34px;
+  pointer-events: auto;
+  background: transparent;
+  z-index: 10;
+}
+
+.floating-side-preview.modal-side-left::before {
+  left: auto;
+  right: -32px;
 }
 
 .floating-side-preview.is-dragging {
@@ -8213,6 +8230,7 @@ footer,
   width: 100%;
   aspect-ratio: 16 / 10;
   background: #0f172a;
+  border-radius: 12px;
   overflow: hidden;
   display: flex;
   align-items: center;

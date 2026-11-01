@@ -1384,6 +1384,8 @@ function initDraggableProjectPreview() {
   let countdownInterval = null;
   let countdownTimeout = null;
   let hoverLeaveTimeout = null;
+  let entranceTimeout = null;
+  let closeTimeout = null;
   let isPinned = false;
   let currentCard = null;
   let isModalHovered = false;
@@ -1511,9 +1513,11 @@ function initDraggableProjectPreview() {
     if (!isRightmost) {
       // Normal left / middle cards: opens to the right
       baseSideX = cardRect.right + 20;
+      modal.classList.remove("modal-side-left");
     } else {
       // Last / rightmost card: opens to the left
       baseSideX = cardRect.left - modalW - 20;
+      modal.classList.add("modal-side-left");
     }
 
     // Relative mouse position within the card's image target (-0.5 to +0.5)
@@ -1554,6 +1558,11 @@ function initDraggableProjectPreview() {
     if (liveBtn) liveBtn.href = data.live || "#";
     if (ghBtn) ghBtn.href = data.github || "#";
 
+    // Cancel pending close or entrance timeouts
+    if (closeTimeout) { clearTimeout(closeTimeout); closeTimeout = null; }
+    if (entranceTimeout) { clearTimeout(entranceTimeout); entranceTimeout = null; }
+    if (hoverLeaveTimeout) { clearTimeout(hoverLeaveTimeout); hoverLeaveTimeout = null; }
+
     // Reset countdown and light green live button
     if (countdownInterval) clearInterval(countdownInterval);
     if (countdownTimeout) clearTimeout(countdownTimeout);
@@ -1581,39 +1590,65 @@ function initDraggableProjectPreview() {
 
     computeTargetPosition(card, imgTarget, e.clientX, e.clientY);
 
-    // Direct initial placement so entrance has no jump
+    // Initial placement at target
     currentX = targetX;
     currentY = targetY;
-    currentTiltX = targetTiltX;
-    currentTiltY = targetTiltY;
+    currentTiltX = 0;
+    currentTiltY = 0;
+
+    stopRaf();
 
     modal.style.left = currentX.toFixed(2) + "px";
     modal.style.top = currentY.toFixed(2) + "px";
-    modal.style.transform = `perspective(1000px) rotateX(${currentTiltX.toFixed(2)}deg) rotateY(${currentTiltY.toFixed(2)}deg) scale(1.01)`;
-    modal.style.display = "block";
     modal.classList.remove("is-dragging");
 
+    // Buttery-smooth entrance: start slightly scaled down (0.93) and 8px offset, 0 opacity
+    modal.style.opacity = "0";
+    modal.style.transform = "perspective(1000px) scale(0.93) translate3d(0, 8px, 0)";
+    modal.style.transition = "opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1), transform 0.32s cubic-bezier(0.16, 1, 0.3, 1)";
+    modal.style.display = "block";
+
+    // Double requestAnimationFrame ensures initial transform is committed before smooth transition
     requestAnimationFrame(() => {
-      modal.style.opacity = "1";
+      requestAnimationFrame(() => {
+        if (modal.style.display !== "none" && !isPinned) {
+          modal.style.opacity = "1";
+          modal.style.transform = "perspective(1000px) scale(1) translate3d(0, 0, 0)";
+        }
+      });
     });
 
-    if (!isPinned) {
-      if (pinBadge) pinBadge.style.display = "none";
-      if (zoomToolbar) zoomToolbar.style.display = "none";
-      startRaf();
-    }
+    // Seamless handoff to LERP physics after entrance animation completes
+    entranceTimeout = setTimeout(() => {
+      if (modal.style.display !== "none" && !isPinned) {
+        modal.style.transition = "none";
+        if (pinBadge) pinBadge.style.display = "none";
+        if (zoomToolbar) zoomToolbar.style.display = "none";
+        startRaf();
+      }
+    }, 320);
   }
 
   function closePreview() {
-    modal.style.opacity = "0";
-    setTimeout(() => {
-      if (modal.style.opacity === "0") {
-        modal.style.display = "none";
-        modal.style.transform = "none";
-      }
-    }, 220);
+    if (entranceTimeout) { clearTimeout(entranceTimeout); entranceTimeout = null; }
+    if (closeTimeout) { clearTimeout(closeTimeout); closeTimeout = null; }
+    if (hoverLeaveTimeout) { clearTimeout(hoverLeaveTimeout); hoverLeaveTimeout = null; }
 
     stopRaf();
+
+    // Instant, snappy ("rap se") dismissal in 80ms
+    modal.style.transition = "opacity 0.08s ease-out, transform 0.08s ease-out";
+    modal.style.opacity = "0";
+    modal.style.transform = "perspective(1000px) scale(0.96) translate3d(0, 4px, 0)";
+
+    closeTimeout = setTimeout(() => {
+      if (modal.style.opacity === "0" && !isPinned) {
+        modal.style.display = "none";
+        modal.style.transform = "none";
+        modal.style.transition = "none";
+      }
+    }, 80);
+
     isPinned = false;
     currentCard = null;
     isModalHovered = false;
@@ -1623,7 +1658,6 @@ function initDraggableProjectPreview() {
     if (stage) stage.classList.remove("is-pinned");
     if (countdownInterval) clearInterval(countdownInterval);
     if (countdownTimeout) clearTimeout(countdownTimeout);
-    if (hoverLeaveTimeout) clearTimeout(hoverLeaveTimeout);
   }
 
   function setPinned(pinned) {
@@ -1676,7 +1710,8 @@ function initDraggableProjectPreview() {
 
     // Hover Enter on IMAGE ONLY
     imgTarget.addEventListener("mouseenter", (e) => {
-      if (hoverLeaveTimeout) clearTimeout(hoverLeaveTimeout);
+      if (closeTimeout) { clearTimeout(closeTimeout); closeTimeout = null; }
+      if (hoverLeaveTimeout) { clearTimeout(hoverLeaveTimeout); hoverLeaveTimeout = null; }
       if (isPinned && modal.style.display !== "none") return;
 
       const data = {
@@ -1698,13 +1733,19 @@ function initDraggableProjectPreview() {
       computeTargetPosition(card, imgTarget, e.clientX, e.clientY);
     });
 
-    // Hover Leave IMAGE
-    imgTarget.addEventListener("mouseleave", () => {
-      if (!isPinned && modal.style.display !== "none" && !isModalHovered) {
-        hoverLeaveTimeout = setTimeout(() => {
-          if (!isModalHovered) closePreview();
-        }, 280);
+    // Hover Leave IMAGE: quick instant dismissal ("rap se hatna chaiye")
+    imgTarget.addEventListener("mouseleave", (e) => {
+      if (isPinned) return;
+      if (modal.style.display === "none") return;
+
+      // If pointer is moving into the floating preview or its hit-bridge, keep open
+      const enteringModal = e.relatedTarget && (modal.contains(e.relatedTarget) || e.relatedTarget === modal);
+      if (enteringModal) {
+        return;
       }
+
+      // Rap se hatna: close immediately!
+      closePreview();
     });
 
     // Double-click on IMAGE pins preview
@@ -1717,19 +1758,26 @@ function initDraggableProjectPreview() {
   // When mouse enters modal: keep open and smoothly level out
   modal.addEventListener("mouseenter", () => {
     isModalHovered = true;
-    if (hoverLeaveTimeout) clearTimeout(hoverLeaveTimeout);
+    if (closeTimeout) { clearTimeout(closeTimeout); closeTimeout = null; }
+    if (hoverLeaveTimeout) { clearTimeout(hoverLeaveTimeout); hoverLeaveTimeout = null; }
     targetTiltX = 0;
     targetTiltY = 0;
   });
 
-  // When mouse leaves modal
-  modal.addEventListener("mouseleave", () => {
+  // When mouse leaves modal: quick dismissal
+  modal.addEventListener("mouseleave", (e) => {
     isModalHovered = false;
-    if (!isPinned && modal.style.display !== "none") {
-      hoverLeaveTimeout = setTimeout(() => {
-        closePreview();
-      }, 280);
+    if (isPinned || modal.style.display === "none") return;
+
+    // Check if moving back onto the card's image area
+    const enteringCardImg = e.relatedTarget && e.relatedTarget.closest && (
+      e.relatedTarget.closest(".card-preview-area, .compact-thumb-wrap")
+    );
+    if (enteringCardImg) {
+      return;
     }
+
+    closePreview();
   });
 
   // Draggable logic for user to move anywhere & Pan when zoomed
