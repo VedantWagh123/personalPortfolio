@@ -821,23 +821,26 @@ function initContactForm() {
   const modal = document.getElementById("successModal");
 
   if (form) {
-    form.addEventListener("submit", (e) => {
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      const firstName = document.getElementById("firstName")?.value.trim();
-      const lastName = document.getElementById("lastName")?.value.trim();
-      const email = document.getElementById("email")?.value.trim();
-      const message = document.getElementById("message")?.value.trim();
+      const firstName = document.getElementById("firstName")?.value.trim() || "";
+      const lastName = document.getElementById("lastName")?.value.trim() || "";
+      const email = document.getElementById("email")?.value.trim() || "";
+      const phone = document.getElementById("phone")?.value.trim() || "Not provided";
+      const subject = document.getElementById("subject")?.value || "General Inquiry";
+      const message = document.getElementById("message")?.value.trim() || "";
+      const newsletter = document.getElementById("newsletter")?.checked ? "Subscribed" : "No";
       const submitBtn = form.querySelector(".submit-btn");
 
       if (!firstName || !lastName || !email || !message) {
-        alert("Please complete all required fields.");
+        showNotificationToast("Form Error", "Please fill in all required fields.");
         return;
       }
 
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
-        alert("Please enter a valid email address.");
+        showNotificationToast("Invalid Email", "Please enter a valid email address.");
         return;
       }
 
@@ -845,7 +848,28 @@ function initContactForm() {
       submitBtn.disabled = true;
       submitBtn.innerHTML = `<span>Sending...</span> <i class="fas fa-spinner fa-spin"></i>`;
 
-      setTimeout(() => {
+      try {
+        const payload = {
+          "Sender Name": `${firstName} ${lastName}`,
+          "Email Address": email,
+          "Phone Number": phone,
+          "Subject": subject,
+          "Message": message,
+          "Newsletter": newsletter,
+          "_captcha": "false",
+          "_template": "table",
+          "_subject": `New Portfolio Message from ${firstName} ${lastName} (${subject})`
+        };
+
+        const res = await fetch("https://formsubmit.co/ajax/waghvedant28@gmail.com", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
+
         submitBtn.disabled = false;
         submitBtn.innerHTML = origText;
 
@@ -853,11 +877,26 @@ function initContactForm() {
           modal.classList.add("show");
           document.body.style.overflow = "hidden";
         } else {
-          alert("Thank you! Your message has been sent successfully.");
+          showNotificationToast("Message Sent", "Thank you! Your message has been sent to Vedant.");
         }
 
         form.reset();
-      }, 1200);
+      } catch (err) {
+        console.warn("AJAX submit fallback to native submit:", err);
+        try {
+          form.action = "https://formsubmit.co/waghvedant28@gmail.com";
+          form.method = "POST";
+          form.submit();
+        } catch (e2) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = origText;
+          if (modal) {
+            modal.classList.add("show");
+            document.body.style.overflow = "hidden";
+          }
+          form.reset();
+        }
+      }
     });
   }
 }

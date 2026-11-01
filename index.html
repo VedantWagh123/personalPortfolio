@@ -1668,7 +1668,11 @@
         <div class="form-content">
           <h2>Send Us a Message</h2>
           <p>Fill out the form below and we'll get back to you within 24 hours.</p>
-          <form class="contact-form" id="contactForm">
+          <form class="contact-form" id="contactForm" action="https://formsubmit.co/waghvedant28@gmail.com" method="POST">
+            <!-- Simple & secure FormSubmit integration (no mailer needed) -->
+            <input type="hidden" name="_captcha" value="false">
+            <input type="hidden" name="_template" value="table">
+            <input type="hidden" name="_subject" value="New Portfolio Message for Vedant!">
             <div class="form-row">
               <div class="form-group">
                 <label for="firstName">First Name *</label>
