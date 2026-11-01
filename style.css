@@ -8510,8 +8510,18 @@ footer,
 
 /* Ultra-Smooth Code Window Typewriter Styling */
 .card-code {
-  width: 255px !important;
-  min-height: 252px !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+  max-width: 100% !important;
+}
+
+.card-code pre {
+  margin: 0 !important;
+  font-size: 0.76rem !important;
+  line-height: 1.48 !important;
+  color: #cbd5e1 !important;
+  overflow: hidden !important;
+  white-space: pre !important;
 }
 
 .code-typed-role {

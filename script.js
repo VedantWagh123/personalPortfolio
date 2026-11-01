@@ -1052,32 +1052,39 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const presets = [
     {
-      role: "Software Development Engineer",
-      skills: '<span class="str">"Full-Stack"</span>, <span class="str">"Cloud"</span>, <span class="str">"AI"</span>',
-      mindset: "Build &amp; Scale",
+      role: "Software Dev",
+      skills: '<span class="str">"Web"</span>, <span class="str">"Mobile"</span>, <span class="str">"AI"</span>',
+      mindset: "Build",
       cmd: "npm run dev",
-      status: 'Compiled successfully in 0.18s <i class="fas fa-check"></i>'
+      status: 'Compiled in 0.2s <i class="fas fa-check"></i>'
     },
     {
-      role: "Full-Stack Engineer",
-      skills: '<span class="str">"React.js"</span>, <span class="str">"Node.js"</span>, <span class="str">"MongoDB"</span>',
-      mindset: "High Performance",
-      cmd: "npm run test",
-      status: 'All 24 test suites passed <i class="fas fa-check"></i>'
+      role: "Full-Stack",
+      skills: '<span class="str">"React"</span>, <span class="str">"Node"</span>, <span class="str">"AWS"</span>',
+      mindset: "Scale",
+      cmd: "npm test",
+      status: 'Tests passed <i class="fas fa-check"></i>'
     },
     {
-      role: "Backend & Microservices Dev",
-      skills: '<span class="str">"Docker"</span>, <span class="str">"AWS"</span>, <span class="str">"Redis"</span>',
-      mindset: "99.9% Uptime",
-      cmd: "npm run deploy",
-      status: 'Deployed to AWS EC2 <i class="fas fa-check"></i>'
-    },
-    {
-      role: "React & Next.js Specialist",
-      skills: '<span class="str">"TypeScript"</span>, <span class="str">"Tailwind"</span>, <span class="str">"REST APIs"</span>',
-      mindset: "Clean Architecture",
+      role: "Backend Dev",
+      skills: '<span class="str">"Docker"</span>, <span class="str">"API"</span>, <span class="str">"DB"</span>',
+      mindset: "Optimize",
       cmd: "npm run build",
-      status: 'Production build ready <i class="fas fa-check"></i>'
+      status: 'Bundle ready <i class="fas fa-check"></i>'
+    },
+    {
+      role: "Cloud & Web",
+      skills: '<span class="str">"Next"</span>, <span class="str">"Redis"</span>, <span class="str">"Git"</span>',
+      mindset: "Deliver",
+      cmd: "git push",
+      status: 'Live on cloud <i class="fas fa-check"></i>'
+    },
+    {
+      role: "SDE Intern",
+      skills: '<span class="str">"FullStack"</span>, <span class="str">"Cloud"</span>',
+      mindset: "Impact",
+      cmd: "npm start",
+      status: 'Ready on 8080 <i class="fas fa-check"></i>'
     }
   ];
 
