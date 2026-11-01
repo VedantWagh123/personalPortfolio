@@ -219,12 +219,36 @@ window.toggleMenu = function() {
   if (menuIcon) menuIcon.classList.toggle("active");
 };
 
-// NATIVE SMOOTH SCROLL (uses browser-native smooth scrolling - zero lag)
-function smoothScrollTo(targetY) {
-  window.scrollTo({
-    top: Math.max(0, Math.round(targetY)),
-    behavior: 'smooth'
-  });
+// MASTER UNIFIED SMOOTH SCROLL CONTROLLER
+// Seamlessly delegates to Lenis inertial momentum or silky native fallback
+function smoothScrollTo(target, offset = -70) {
+  let targetY = 0;
+  if (typeof target === "number") {
+    targetY = target;
+  } else if (target instanceof HTMLElement) {
+    targetY = target.getBoundingClientRect().top + (window.pageYOffset || document.documentElement.scrollTop);
+  }
+
+  if (window.lenis) {
+    if (typeof target === "number") {
+      window.lenis.scrollTo(targetY, {
+        duration: 1.15,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
+      });
+    } else {
+      window.lenis.scrollTo(target, {
+        offset: offset,
+        duration: 1.15,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
+      });
+    }
+  } else {
+    const finalTop = typeof target === "number" ? targetY : (targetY + offset);
+    window.scrollTo({
+      top: Math.max(0, Math.round(finalTop)),
+      behavior: 'smooth'
+    });
+  }
 }
 
 
@@ -358,20 +382,12 @@ window.addEventListener("load", () => {
   }
 });
 
-// Global Smooth Scrolling & Hero Scroll Down Handlers
+// Dedicated Hero Mouse Scroll Down Click with visual feedback & silky scroll animation
 document.addEventListener("DOMContentLoaded", () => {
-  const navLinks = document.querySelectorAll('a[href^="#"]');
-  const navContainer = document.getElementById("navLinks");
-  const menuIcon = document.querySelector(".menu-icon");
   const heroScrollBtn = document.getElementById("heroScrollDown");
-
-  // Dedicated Hero Mouse Scroll Down Click with visual feedback & silky scroll animation
   if (heroScrollBtn) {
     heroScrollBtn.addEventListener("click", function(e) {
       e.preventDefault();
-      e.stopPropagation();
-
-      // Trigger animated mouse pulse & dot glide
       heroScrollBtn.classList.add("is-scrolling");
       setTimeout(() => {
         heroScrollBtn.classList.remove("is-scrolling");
@@ -379,38 +395,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const aboutSection = document.querySelector("#about") || document.querySelector(".about");
       if (aboutSection) {
-        const navHeight = 70;
-        const targetPosition = aboutSection.getBoundingClientRect().top + window.pageYOffset - navHeight;
-        smoothScrollTo(targetPosition, 1050);
+        smoothScrollTo(aboutSection, -70);
       }
     });
   }
-
-  // Smooth Scrolling for all hash links with cubic easing
-  navLinks.forEach(link => {
-    // Avoid double-binding if it's the hero scroll button
-    if (link.id === "heroScrollDown") return;
-
-    link.addEventListener("click", function(e) {
-      const href = this.getAttribute("href");
-      if (href === "#" || href === "") return;
-      
-      const target = document.querySelector(href);
-      if (target) {
-        e.preventDefault();
-        const navHeight = 70;
-        const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - navHeight;
-
-        smoothScrollTo(targetPosition, 950);
-
-        // Close mobile menu if open
-        if (navContainer && navContainer.classList.contains("show")) {
-          navContainer.classList.remove("show");
-          if (menuIcon) menuIcon.classList.remove("active");
-        }
-      }
-    });
-  });
 });
 
 // Scrollspy with Smooth Hide-on-Scroll & Reappear-on-Stop Navigation (Throttled & Non-blocking)
@@ -978,7 +966,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // ============================================================
-// 15. LENIS ULTRA-SMOOTH INERTIAL SCROLL ENGINE
+// 15. LENIS ULTRA-SMOOTH INERTIAL SCROLL ENGINE & PARALLAX
 // ============================================================
 (function initLenisScroll() {
   if (typeof Lenis === "undefined") {
@@ -986,15 +974,16 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
+  // Elite 60-120fps inertial scroll engine
   const lenis = new Lenis({
     duration: 1.15,
     easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
     orientation: 'vertical',
     gestureOrientation: 'vertical',
     smoothWheel: true,
-    wheelMultiplier: 1.0,
-    smoothTouch: false, // native hardware smooth touch on mobile & trackpads
-    touchMultiplier: 1.5,
+    wheelMultiplier: 0.95,
+    smoothTouch: false, // native hardware smooth touch for mobile devices
+    touchMultiplier: 1.25,
     infinite: false,
   });
 
@@ -1006,20 +995,19 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   requestAnimationFrame(raf);
 
-  // Sync all scroll listeners (scrollspy, AOS, navbar, back-to-top) with Lenis momentum
-  lenis.on('scroll', (e) => {
+  // Sync scroll events for scrollspy, navbar & back-to-top (zero-reflow)
+  lenis.on('scroll', () => {
     window.dispatchEvent(new Event('scroll'));
-    if (window.AOS) window.AOS.refresh();
   });
 
-  // Intercept hash anchor links for buttery glide
+  // Master Unified Anchor Link Handler (Desktop & Mobile)
   document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function(e) {
       const targetId = this.getAttribute('href');
       if (targetId && targetId !== '#' && document.querySelector(targetId)) {
         e.preventDefault();
         const targetEl = document.querySelector(targetId);
-        lenis.scrollTo(targetEl, { offset: -70, duration: 1.15 });
+        smoothScrollTo(targetEl, -70);
 
         // Close mobile nav if opened
         const nav = document.getElementById("navLinks");
@@ -1031,12 +1019,34 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   });
+
+  // Subtle Depth Parallax on Floating Hero Elements (Desktop Only)
+  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches && window.innerWidth >= 992) {
+    const floatCards = Array.from(document.querySelectorAll(".card-rocket, .card-performance, .card-ideas, .card-deploy"));
+    const doodleNote = document.querySelector(".hero-doodle-note");
+    const speeds = [0.035, -0.04, 0.03, -0.025];
+    let ticking = false;
+
+    window.addEventListener("scroll", () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          const sy = window.pageYOffset || document.documentElement.scrollTop;
+          if (sy < window.innerHeight * 1.25) {
+            floatCards.forEach((c, idx) => {
+              c.style.transform = `translate3d(0, ${(sy * speeds[idx % speeds.length]).toFixed(2)}px, 0)`;
+            });
+            if (doodleNote) {
+              doodleNote.style.transform = `translate3d(0, ${(sy * 0.02).toFixed(2)}px, 0) rotate(-5deg)`;
+            }
+          }
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }, { passive: true });
+  }
 })();
 
-// ============================================================
-// 16. AUTOMATIC VIRTUAL CURSOR DEMO ON HERO SECTION
-// (Glide Up from Below -> Click Terminal -> Live Type -> Fade Out)
-// ============================================================
 // ============================================================
 // 16. ULTRA-SMOOTH CODE CARD TYPEWRITER ENGINE (developer.js)
 // ============================================================

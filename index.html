@@ -1900,12 +1900,12 @@
   <script src="script.js"></script>
   
   <script>
-    // Initialize AOS — once:true for performance, smooth easing
+    // Initialize AOS — Premium cubic-bezier easing, once:true for zero-replay performance
     if (window.AOS) {
       AOS.init({
-        offset: 60,
-        duration: 700,
-        easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
+        offset: 50,
+        duration: 800,
+        easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
         once: true,
         mirror: false,
         disable: false

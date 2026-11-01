@@ -6670,18 +6670,32 @@ section, .about, .services-section, .projects-page-section, .testimonial-section
 /* ============================================================ */
 /* ULTRA-SMOOTH HARDWARE ACCELERATED SCROLL OPTIMIZATIONS       */
 /* ============================================================ */
-html {
-  scroll-behavior: smooth !important;
-  over
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
 }
 
 body {
-  scroll-behavior: smooth !important;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Hardware accelerated sections for zero scroll jank/lag */
+/* Hardware accelerated layer promotions for zero scroll jank */
 .hero-section,
 .about,
 .services-section,
@@ -6693,21 +6707,6 @@ body {
   transform: translateZ(0);
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
-}
-
-
-/* ============================================================ */
-/* ULTRA-SMOOTH HARDWARE ACCELERATED SCROLL OPTIMIZATIONS       */
-/* ============================================================ */
-html {
-  scroll-behavior: smooth !important;
-  over
-}
-
-body {
-  scroll-behavior: smooth !important;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Hardware accelerated sections for zero scroll jank/lag */
@@ -8584,4 +8583,174 @@ footer,
   0% { transform: scale(0.96); filter: drop-shadow(0 0 0 rgba(52, 211, 153, 0)); }
   45% { transform: scale(1.05); filter: drop-shadow(0 0 10px rgba(52, 211, 153, 0.9)); color: #6ee7b7 !important; }
   100% { transform: scale(1); filter: drop-shadow(0 0 0 rgba(52, 211, 153, 0)); }
+}
+
+
+/* ============================================================ */
+/* MASTER PREMIUM SCROLL ANIMATIONS ENGINE                      */
+/* (Cubic-Bezier Easing, Staggers, Text Reveals, Scale & Depth) */
+/* ============================================================ */
+
+/* 1. Global High-Performance AOS Easing Curve Overrides */
+[data-aos] {
+  pointer-events: auto !important;
+  will-change: transform, opacity;
+}
+
+[data-aos="fade-up"] {
+  transform: translate3d(0, 32px, 0);
+  opacity: 0;
+  transition-property: transform, opacity !important;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1) !important;
+  transition-duration: 0.8s !important;
+}
+
+[data-aos="fade-up"].aos-animate {
+  transform: translate3d(0, 0, 0) !important;
+  opacity: 1 !important;
+}
+
+[data-aos="fade-down"] {
+  transform: translate3d(0, -28px, 0);
+  opacity: 0;
+  transition-property: transform, opacity !important;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1) !important;
+  transition-duration: 0.8s !important;
+}
+
+[data-aos="fade-down"].aos-animate {
+  transform: translate3d(0, 0, 0) !important;
+  opacity: 1 !important;
+}
+
+[data-aos="fade-right"] {
+  transform: translate3d(-36px, 0, 0);
+  opacity: 0;
+  transition-property: transform, opacity !important;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1) !important;
+  transition-duration: 0.85s !important;
+}
+
+[data-aos="fade-right"].aos-animate {
+  transform: translate3d(0, 0, 0) !important;
+  opacity: 1 !important;
+}
+
+[data-aos="fade-left"] {
+  transform: translate3d(36px, 0, 0);
+  opacity: 0;
+  transition-property: transform, opacity !important;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1) !important;
+  transition-duration: 0.85s !important;
+}
+
+[data-aos="fade-left"].aos-animate {
+  transform: translate3d(0, 0, 0) !important;
+  opacity: 1 !important;
+}
+
+[data-aos="zoom-in"] {
+  transform: scale(0.93) translate3d(0, 16px, 0);
+  opacity: 0;
+  transition-property: transform, opacity !important;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1) !important;
+  transition-duration: 0.8s !important;
+}
+
+[data-aos="zoom-in"].aos-animate {
+  transform: scale(1) translate3d(0, 0, 0) !important;
+  opacity: 1 !important;
+}
+
+/* 2. Premium Section Heading Staggered Text Reveal */
+.services-header-exact .services-pill-badge {
+  opacity: 0;
+  transform: translate3d(0, 16px, 0);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.services-header-exact .services-main-title {
+  opacity: 0;
+  transform: translate3d(0, 24px, 0);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.08s, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.08s;
+}
+
+.services-header-exact .services-title-underline {
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.2s;
+}
+
+.services-header-exact .services-lead-desc {
+  opacity: 0;
+  transform: translate3d(0, 18px, 0);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.22s, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.22s;
+}
+
+.services-header-exact.aos-animate .services-pill-badge,
+.services-header-exact.is-revealed .services-pill-badge {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+.services-header-exact.aos-animate .services-main-title,
+.services-header-exact.is-revealed .services-main-title {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+.services-header-exact.aos-animate .services-title-underline,
+.services-header-exact.is-revealed .services-title-underline {
+  transform: scaleX(1);
+}
+
+.services-header-exact.aos-animate .services-lead-desc,
+.services-header-exact.is-revealed .services-lead-desc {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+/* 3. Staggered Card Entrance Animations */
+.services-grid-exact .services-card-exact:nth-child(1) { transition-delay: 0.05s !important; }
+.services-grid-exact .services-card-exact:nth-child(2) { transition-delay: 0.12s !important; }
+.services-grid-exact .services-card-exact:nth-child(3) { transition-delay: 0.19s !important; }
+.services-grid-exact .services-card-exact:nth-child(4) { transition-delay: 0.1s !important; }
+.services-grid-exact .services-card-exact:nth-child(5) { transition-delay: 0.18s !important; }
+.services-grid-exact .services-card-exact:nth-child(6) { transition-delay: 0.26s !important; }
+
+.projects-featured-grid .project-card:nth-child(1) { transition-delay: 0.06s !important; }
+.projects-featured-grid .project-card:nth-child(2) { transition-delay: 0.14s !important; }
+.projects-featured-grid .project-card:nth-child(3) { transition-delay: 0.22s !important; }
+
+.projects-compact-grid .compact-project-card:nth-child(1) { transition-delay: 0.04s !important; }
+.projects-compact-grid .compact-project-card:nth-child(2) { transition-delay: 0.09s !important; }
+.projects-compact-grid .compact-project-card:nth-child(3) { transition-delay: 0.14s !important; }
+.projects-compact-grid .compact-project-card:nth-child(4) { transition-delay: 0.19s !important; }
+.projects-compact-grid .compact-project-card:nth-child(5) { transition-delay: 0.24s !important; }
+.projects-compact-grid .compact-project-card:nth-child(6) { transition-delay: 0.29s !important; }
+
+.contact-cards .contact-card:nth-child(1) { transition-delay: 0.05s !important; }
+.contact-cards .contact-card:nth-child(2) { transition-delay: 0.15s !important; }
+.contact-cards .contact-card:nth-child(3) { transition-delay: 0.25s !important; }
+
+/* 4. Smooth Scale & Slide Entrance for Images */
+.about-profile-exact,
+.contact-showcase-card {
+  transition: transform 0.85s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  will-change: transform, opacity;
+}
+
+/* 5. Accessibility: Strict prefers-reduced-motion Support */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  [data-aos] {
+    transform: none !important;
+    opacity: 1 !important;
+    transition: none !important;
+  }
 }
