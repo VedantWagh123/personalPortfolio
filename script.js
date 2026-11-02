@@ -678,6 +678,78 @@ function initProjectsStats() {
   counters.forEach(c => observer.observe(c));
 }
 
+// ============================================================
+// 9B. ABOUT SECTION METRICS COUNTER (COUNT FROM 0 ON SCROLL)
+// ============================================================
+function initAboutMetricCounters() {
+  const metricVals = document.querySelectorAll(".about-metrics-col .metric-val");
+  const metricCards = document.querySelectorAll(".about-metric-card");
+  if (metricVals.length === 0) return;
+
+  function animateCounter(el, target, suffix) {
+    const duration = 1400; // 1.4s smooth counter
+    const startTime = performance.now();
+
+    function update(now) {
+      const elapsed = now - startTime;
+      const progress = Math.min(1, elapsed / duration);
+      // Smooth ease-out cubic deceleration
+      const ease = 1 - Math.pow(1 - progress, 3);
+      const current = Math.round(target * ease);
+
+      el.textContent = current + suffix;
+
+      if (progress < 1) {
+        requestAnimationFrame(update);
+      } else {
+        el.textContent = target + suffix;
+      }
+    }
+
+    requestAnimationFrame(update);
+  }
+
+  function triggerCard(cardOrVal) {
+    const valEl = cardOrVal.classList.contains("metric-val") 
+      ? cardOrVal 
+      : cardOrVal.querySelector(".metric-val");
+    if (!valEl || valEl.dataset.counted === "true") return;
+    valEl.dataset.counted = "true";
+
+    const target = parseInt(valEl.getAttribute("data-count") || valEl.textContent, 10);
+    if (isNaN(target)) return;
+    const isPct = valEl.getAttribute("data-suffix") === "%" || valEl.textContent.includes("%");
+    const suffix = isPct ? "%" : "+";
+
+    animateCounter(valEl, target, suffix);
+  }
+
+  // Pre-set to 0+ / 0% initially
+  metricVals.forEach(el => {
+    const isPct = el.getAttribute("data-suffix") === "%" || el.textContent.includes("%");
+    el.textContent = "0" + (isPct ? "%" : "+");
+  });
+
+  if ("IntersectionObserver" in window) {
+    const observer = new IntersectionObserver((entries, obs) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          triggerCard(entry.target);
+          obs.unobserve(entry.target);
+        }
+      });
+    }, {
+      threshold: 0.1
+    });
+
+    const targets = metricCards.length > 0 ? metricCards : metricVals;
+    targets.forEach(t => observer.observe(t));
+  } else {
+    // Fallback: trigger immediately if no IntersectionObserver
+    metricVals.forEach(v => triggerCard(v));
+  }
+}
+
 function initCardTilt() {
   const cards = document.querySelectorAll(".master-project-card, .project-card");
 
@@ -995,6 +1067,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initCvAndBlogModals();
   initServiceCountdown();
   initProjectsStats();
+  initAboutMetricCounters();
   initCardTilt();
   initTestimonials();
   initContactForm();
@@ -1940,4 +2013,5 @@ if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", initServicesAndPreview);
 } else {
   initServicesAndPreview();
+  if (typeof initAboutMetricCounters === 'function') initAboutMetricCounters();
 }
