@@ -5523,10 +5523,71 @@ section, .about, .services-section, .projects-page-section, .testimonial-section
   }
 }
 
-@keyframes heroOrbitReveal {
+@keyframes heroOrbitSvgFade {
   0% {
     opacity: 0;
-    transform: scale(0.90);
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Progressive 360-degree reveal of the dotted circle via SVG mask */
+@keyframes heroOrbitDraw {
+  0% {
+    stroke-dashoffset: 1508;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* One-time traveling glowing highlight completing exactly 1 revolution (360 degrees) and fading out */
+@keyframes heroOrbitGlowTravel {
+  0% {
+    stroke-dashoffset: 0;
+    opacity: 0;
+  }
+  6% {
+    opacity: 0.85;
+  }
+  86% {
+    opacity: 0.85;
+  }
+  98% {
+    opacity: 0;
+  }
+  100% {
+    stroke-dashoffset: -1508;
+    opacity: 0;
+  }
+}
+
+@keyframes heroOrbitCoreTravel {
+  0% {
+    stroke-dashoffset: 0;
+    opacity: 0;
+  }
+  6% {
+    opacity: 1;
+  }
+  86% {
+    opacity: 1;
+  }
+  98% {
+    opacity: 0;
+  }
+  100% {
+    stroke-dashoffset: -1508;
+    opacity: 0;
+  }
+}
+
+/* Blue accent particles entrance */
+@keyframes heroOrbitDotPop {
+  0% {
+    opacity: 0;
+    transform: scale(0);
   }
   100% {
     opacity: 1;
@@ -5712,7 +5773,28 @@ section, .about, .services-section, .projects-page-section, .testimonial-section
 
 /* Orbit SVG Path (300ms - 850ms) */
 .hero-section.hero-cinematic-active .hero-orbit-svg {
-  animation: heroOrbitReveal 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.30s both !important;
+  animation: heroOrbitSvgFade 0.40s cubic-bezier(0.22, 1, 0.36, 1) 0.30s both !important;
+}
+
+/* Progressive 360-degree orbit reveal and traveling highlight */
+.hero-section.hero-cinematic-active .hero-orbit-mask-circle {
+  animation: heroOrbitDraw 1.85s cubic-bezier(0.25, 1, 0.35, 1) 0.30s forwards !important;
+}
+
+.hero-section.hero-cinematic-active .hero-orbit-glow-arc {
+  animation: heroOrbitGlowTravel 1.85s cubic-bezier(0.25, 1, 0.35, 1) 0.30s forwards !important;
+}
+
+.hero-section.hero-cinematic-active .hero-orbit-core-arc {
+  animation: heroOrbitCoreTravel 1.85s cubic-bezier(0.25, 1, 0.35, 1) 0.30s forwards !important;
+}
+
+.hero-section.hero-cinematic-active .hero-orbit-dot-1 {
+  animation: heroOrbitDotPop 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.70s both !important;
+}
+
+.hero-section.hero-cinematic-active .hero-orbit-dot-2 {
+  animation: heroOrbitDotPop 0.45s cubic-bezier(0.22, 1, 0.36, 1) 1.50s both !important;
 }
 
 /* Main Portrait: Scale 94% -> 100% + subtle upward floating entrance (300ms - 950ms) */
@@ -5815,6 +5897,17 @@ section, .about, .services-section, .projects-page-section, .testimonial-section
   .hero-section .hero-aura-blob,
   .hero-section .hero-tech-dots,
   .hero-section .hero-orbit-svg,
+  .hero-section .hero-orbit-mask-circle {
+    stroke-dashoffset: 0 !important;
+    animation: none !important;
+  }
+  .hero-section .hero-orbit-glow-arc,
+  .hero-section .hero-orbit-core-arc {
+    display: none !important;
+    animation: none !important;
+  }
+  .hero-section .hero-orbit-dot-1,
+  .hero-section .hero-orbit-dot-2,
   .hero-section .hero-person-wrap,
   .hero-section .card-code,
   .hero-section .hero-doodle-note,

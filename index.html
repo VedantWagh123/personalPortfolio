@@ -178,16 +178,40 @@
 
           <!-- Orbit Curve Path with Blue Accent Particles -->
           <svg class="hero-orbit-svg" viewBox="0 0 710 610" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="355" cy="275" r="240" stroke="url(#orbitGradient)" stroke-width="1.8" stroke-dasharray="6 6" opacity="0.6"/>
-            <circle cx="595" cy="195" r="4" fill="#3b82f6" />
-            <circle cx="115" cy="355" r="4" fill="#3b82f6" />
             <defs>
               <linearGradient id="orbitGradient" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.8"/>
                 <stop offset="50%" stop-color="#60a5fa" stop-opacity="0.4"/>
                 <stop offset="100%" stop-color="#93c5fd" stop-opacity="0.8"/>
               </linearGradient>
+
+              <!-- Subtle Soft Glow Filter for Traveling Highlight -->
+              <filter id="heroOrbitGlowFilter" x="-40%" y="-40%" width="180%" height="180%">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="coloredBlur"/>
+                <feMerge>
+                  <feMergeNode in="coloredBlur"/>
+                  <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+              </filter>
+
+              <!-- One-Time Progressive Reveal Mask for Dotted Circle -->
+              <mask id="heroOrbitRevealMask">
+                <circle class="hero-orbit-mask-circle" cx="355" cy="275" r="240" fill="none" stroke="#ffffff" stroke-width="12" stroke-dasharray="1508 1508" stroke-dashoffset="1508" transform="rotate(-90 355 275)" />
+              </mask>
             </defs>
+
+            <!-- The Dotted Base Circle (Revealed progressively once, permanently preserved) -->
+            <circle class="hero-orbit-base" cx="355" cy="275" r="240" stroke="url(#orbitGradient)" stroke-width="1.8" stroke-dasharray="6 6" opacity="0.6" mask="url(#heroOrbitRevealMask)"/>
+
+            <!-- One-Time Traveling Glowing Blue Highlight (Single 360-degree revolution) -->
+            <g class="hero-orbit-highlight-group" transform="rotate(-90 355 275)">
+              <circle class="hero-orbit-glow-arc" cx="355" cy="275" r="240" fill="none" stroke="#38bdf8" stroke-width="5" stroke-linecap="round" stroke-dasharray="140 1368" stroke-dashoffset="0" filter="url(#heroOrbitGlowFilter)" opacity="0" />
+              <circle class="hero-orbit-core-arc" cx="355" cy="275" r="240" fill="none" stroke="#93c5fd" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="90 1418" stroke-dashoffset="0" opacity="0" />
+            </g>
+
+            <!-- Accent Particles (Preserved from original) -->
+            <circle class="hero-orbit-dot-1" cx="595" cy="195" r="4" fill="#3b82f6" />
+            <circle class="hero-orbit-dot-2" cx="115" cy="355" r="4" fill="#3b82f6" />
           </svg>
 
           <!-- Decorative Subtle Tech Dots -->
