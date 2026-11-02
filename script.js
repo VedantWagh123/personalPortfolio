@@ -1035,9 +1035,16 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   requestAnimationFrame(raf);
 
-  // Sync scroll events for scrollspy, navbar & back-to-top (zero-reflow)
+  // Sync scroll events for scrollspy, navbar & back-to-top (guarded to prevent recursion)
+  let isDispatchingScroll = false;
   lenis.on('scroll', () => {
-    window.dispatchEvent(new Event('scroll'));
+    if (isDispatchingScroll) return;
+    isDispatchingScroll = true;
+    try {
+      window.dispatchEvent(new Event('scroll'));
+    } finally {
+      isDispatchingScroll = false;
+    }
   });
 
   // Master Unified Anchor Link Handler (Desktop & Mobile)
@@ -1921,8 +1928,12 @@ function initDraggableProjectPreview() {
 }
 
 function initServicesAndPreview() {
-  initDraggableProjectPreview();
-  initServicesTypewriter();
+  if (typeof initDraggableProjectPreview === 'function') {
+    initDraggableProjectPreview();
+  }
+  if (typeof initServicesTypewriter === 'function') {
+    initServicesTypewriter();
+  }
 }
 
 if (document.readyState === "loading") {
